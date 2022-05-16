@@ -16,6 +16,14 @@ public class Person {
         this.document = null;
     }
 
+    public Person(String name, Integer nif, String password) {
+        this.name = name;
+        this.nif = nif;
+        this.password = password;
+
+        this.document = null;
+    }
+
     public String getName() {
         return name;
     }
