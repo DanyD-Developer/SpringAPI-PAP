@@ -18,6 +18,12 @@ public class Config {
         this.destinationFolder          = configProps.getProperty("DESTINATION_FOLDER");
         this.recieptsPdfFileName        = configProps.getProperty("PDFRECEIPTS_FILENAME");
         this.namesAndPasswordsFileName  = configProps.getProperty("PASSWORDS_FILENAME");
+
+        //TODO
+    }
+
+    private static void setConfigurations(){
+        //TODO
     }
 
     public String getOriginFolder() {
