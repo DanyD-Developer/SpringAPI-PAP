@@ -1,17 +1,23 @@
 package com.CMASProject.SplitReceiptsProject.Enteties;
 
-import java.io.File;
+import java.util.Properties;
 
 public class Config {
     //Origin folder is where the wage receipts pdf and NamesPassword.txt are located
+    //Other types of config can be added here.
     private String originFolder;
     private String destinationFolder;
+    private String recieptsPdfFileName;
+    private String namesAndPasswordsFileName;
 
     //Possible feature: allows the user to only do the split whithout protecting the files with password
     // private boolean dontProtect;
     
-    public Config(File configFile) {
-        //TODO
+    public Config(Properties configProps) {
+        this.originFolder               = configProps.getProperty("ORIGIN_FOLDER");
+        this.destinationFolder          = configProps.getProperty("DESTINATION_FOLDER");
+        this.recieptsPdfFileName        = configProps.getProperty("PDFRECEIPTS_FILENAME");
+        this.namesAndPasswordsFileName  = configProps.getProperty("PASSWORDS_FILENAME");
     }
 
     public String getOriginFolder() {
@@ -26,5 +32,19 @@ public class Config {
     }
     public void setDestinationFolder(String destinationFolder) {
         this.destinationFolder = destinationFolder;
+    }
+
+    public String getRecieptsPdfFileName() {
+        return recieptsPdfFileName;
+    }
+    public void setRecieptsPdfFileName(String recieptsPdfFileName) {
+        this.recieptsPdfFileName = recieptsPdfFileName;
+    }
+
+    public String getNamesAndPasswordsFileName() {
+        return namesAndPasswordsFileName;
+    }
+    public void setNamesAndPasswordsFileName(String namesAndPasswordsFileName) {
+        this.namesAndPasswordsFileName = namesAndPasswordsFileName;
     }
 }

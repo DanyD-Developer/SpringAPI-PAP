@@ -12,6 +12,8 @@ public class Person {
     public Person(Integer nif, String password) {
         this.nif = nif;
         this.password = password;
+
+        this.document = null;
     }
 
     public String getName() {
