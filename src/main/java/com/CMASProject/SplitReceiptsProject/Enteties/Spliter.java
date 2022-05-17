@@ -40,7 +40,8 @@ public class Spliter {
 				 
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("It was not possible to split the pdf. Error:"+e.getMessage()+"\nExiting program.");
+			Runtime.getRuntime().exit(5);
 		}
 	}
 }

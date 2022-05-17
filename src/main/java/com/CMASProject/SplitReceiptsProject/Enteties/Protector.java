@@ -18,7 +18,8 @@ public class Protector {
 			person.getDocument().close();
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("It was not possible to protect the pdfs. Error:"+e.getMessage()+"\nExiting program.");
+			Runtime.getRuntime().exit(6);
 		}
 	}
 }

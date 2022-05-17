@@ -29,7 +29,7 @@ public class FileHolder {
             wagesReceipts = document;
         } catch (Exception e) {
             System.out.println("It was not possible to load the wages receipts pdf file. Error:"+e.getMessage()+"\nExiting program.");
-			Runtime.getRuntime().exit(2);
+			Runtime.getRuntime().exit(3);
         }
     }
 
@@ -40,7 +40,7 @@ public class FileHolder {
             nifsAndPasswords = lines;
         } catch (Exception e) {
             System.out.println("It was not possible to load the passwords file. Error:"+e.getMessage()+"\nExiting program.");
-			Runtime.getRuntime().exit(3);
+			Runtime.getRuntime().exit(4);
         }
     }
 
