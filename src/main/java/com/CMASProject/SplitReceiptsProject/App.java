@@ -3,7 +3,6 @@ package com.CMASProject.SplitReceiptsProject;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Config;
@@ -42,6 +41,6 @@ public class App {
 		//Splits
 		Spliter.spliter(fileHolder.getWagesReceipts(), personsList);
 
-		personsList.forEach((person) -> {if(person.getDocument() == null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
+		personsList.forEach((person) -> {if(person.getDocument() != null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
 	}
 }

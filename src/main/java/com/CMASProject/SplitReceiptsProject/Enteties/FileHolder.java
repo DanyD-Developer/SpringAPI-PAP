@@ -24,7 +24,8 @@ public class FileHolder {
     }
 
     private void PDFLoader(String path){
-        try (PDDocument document = PDDocument.load(new File(path));) {
+        try{
+            PDDocument document = PDDocument.load(new File(path));
             wagesReceipts = document;
         } catch (Exception e) {
             System.out.println("It was not possible to load the wages receipts pdf file. Error:"+e.getMessage()+"\nExiting program.");
