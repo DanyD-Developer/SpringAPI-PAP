@@ -25,6 +25,7 @@ public class Spliter {
 						PDPage page = listTree.get(i-1); 
 						PDDocument doc = new PDDocument();
 						if(list.get(l).getNif() == lastNif) {
+							list.get(l).getPersonNameAndDate(text);
 							lastDoc.addPage(page);
 							list.get(l).setDocument(lastDoc);
 						}
