@@ -21,6 +21,8 @@ public class FileHolder {
         
         String passwordPath = config.getOriginFolder()+"\\"+config.getNamesAndPasswordsFileName()+".txt"; 
         
+        System.out.println(pdfPath);
+        
         PDFLoader(pdfPath);
         passwordLoader(passwordPath);
     }

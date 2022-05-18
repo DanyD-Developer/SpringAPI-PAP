@@ -1,6 +1,8 @@
 package com.CMASProject.SplitReceiptsProject;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +17,43 @@ import com.CMASProject.SplitReceiptsProject.Enteties.Spliter;
 public class App {
 
 	public static void main(String[] args) {
-		String configFilePath = "src\\config.properties";
+		String path = System.getenv().get("APPDATA") + "\\SplitProject";
+		String configFilePath = path + "\\config.properties";
+		
 		Properties props = new Properties();
+		File FilePath = new File(configFilePath);
+		File Folderpath = new File(path);
 		
 		//Load the properties file
-		try (FileInputStream propsInput = new FileInputStream(configFilePath)) {
+		if(!(Folderpath.exists())) {
+			if(Folderpath.mkdir()) {
+				if(!(FilePath.exists())) {
+					try {
+						if(FilePath.createNewFile()) {
+							FileWriter myWriter = new FileWriter(FilePath);
+							myWriter.write("ORIGIN_FOLDER=");
+							myWriter.write("\nDESTINATION_FOLDER=");
+							myWriter.write("\nPDFRECEIPTS_FILENAME=");
+							myWriter.write("\nPASSWORDS_FILENAME=");
+							myWriter.close();
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		try (FileInputStream propsInput = new FileInputStream(FilePath)) {
 			props.load(propsInput);
 		} catch (Exception e) {
 			System.out.println("It was not possible to load the config file. Error:"+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(1);
 		}
+		
+		
 
 		//Loads config
-		Config config = new Config(props);
+		Config config = new Config(props, FilePath);
 		
 		//Loads the files
 		FileHolder fileHolder = new FileHolder(config);
