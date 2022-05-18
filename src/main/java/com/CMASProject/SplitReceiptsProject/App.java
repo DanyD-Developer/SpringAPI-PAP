@@ -47,7 +47,6 @@ public class App {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		System.out.println("Task Finished");
 	}
 }

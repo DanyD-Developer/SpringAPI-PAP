@@ -30,6 +30,7 @@ public class Spliter {
 					if(list.get(l).getNif() == lastNif) {
 							lastDoc.addPage(page);
 							list.get(l).setDocument(lastDoc);
+							doc.close();
 						}
 					else {
 							list.get(l).getPersonNameAndDate(text);
