@@ -1,6 +1,7 @@
 package com.CMASProject.SplitReceiptsProject;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -35,12 +36,18 @@ public class App {
 		List<Person> personsList = new ArrayList<>();
 		fileHolder.getNifsAndPasswords().stream().map((nifAndPassword) -> nifAndPassword.split("###")).forEach((nifAndPassword) -> personsList.add(new Person(Integer.parseInt(nifAndPassword[0]),nifAndPassword[1])));
 	
-		//List<String> passwords = 
-		//passwords.stream().map((x) -> x.split("###")).forEach((x) -> personsList.add(new Person(Integer.parseInt(x[0]),x[1])));
 
 		//Splits
 		Spliter.spliter(fileHolder.getWagesReceipts(), personsList);
 
 		personsList.forEach((person) -> {if(person.getDocument() != null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
+		
+		try {
+			fileHolder.getWagesReceipts().close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("Task Finished");
 	}
 }

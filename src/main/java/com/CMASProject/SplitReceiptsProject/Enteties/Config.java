@@ -1,7 +1,7 @@
 package com.CMASProject.SplitReceiptsProject.Enteties;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -23,13 +23,13 @@ public class Config {
         this.destinationFolder = configProps.getProperty("DESTINATION_FOLDER");
         this.recieptsPdfFileName = configProps.getProperty("PDFRECEIPTS_FILENAME");
         this.namesAndPasswordsFileName = configProps.getProperty("PASSWORDS_FILENAME");
-
-        if(originFolder == "" || destinationFolder == "" || recieptsPdfFileName == "" || namesAndPasswordsFileName == ""){
+        
+        if(originFolder.isEmpty() || destinationFolder.isEmpty() || recieptsPdfFileName.isEmpty() || namesAndPasswordsFileName.isEmpty()){
             setConfigurations(configProps);
         }
     }
 
-    private static void setConfigurations(Properties configProps) {
+    private void setConfigurations(Properties configProps) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Insert the path to the folder where the pdf and password are located:");
         String path_origin = sc.nextLine();
@@ -42,15 +42,28 @@ public class Config {
         
         configProps.setProperty("ORIGIN_FOLDER", path_origin);
         configProps.setProperty("DESTINATION_FOLDER", path_destination);
-        configProps.setProperty("DESTINATION_FOLDER", pdfname);
+        configProps.setProperty("PDFRECEIPTS_FILENAME", pdfname);
         configProps.setProperty("PASSWORDS_FILENAME", passwordfile);
-
+        sc.close();
         try {
             configProps.store(new FileOutputStream("src\\config.properties"),null);
         } catch (Exception e) {
             System.out.println("It was not possible to save to the config file. Error:"+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(2);
         }
+        
+        //Load the properties file
+  		try (FileInputStream propsInput = new FileInputStream("src\\config.properties")) {
+  			configProps.load(propsInput);
+  		} catch (Exception e) {
+  			System.out.println("It was not possible to load the config file. Error:"+e.getMessage()+"\nExiting program.");
+  			Runtime.getRuntime().exit(1);
+  		}
+  		
+  		this.originFolder = configProps.getProperty("ORIGIN_FOLDER");
+        this.destinationFolder = configProps.getProperty("DESTINATION_FOLDER");
+        this.recieptsPdfFileName = configProps.getProperty("PDFRECEIPTS_FILENAME");
+        this.namesAndPasswordsFileName = configProps.getProperty("PASSWORDS_FILENAME");
     }
 
     public String getOriginFolder() {

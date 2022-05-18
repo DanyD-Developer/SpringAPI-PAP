@@ -27,7 +27,7 @@ public class Person {
                 this.setName(firtName+" "+lastName);
 
                 //Gets the date like this(24.05.2016) and turns into ->(Mai_2016)
-                String[] date = lines[i-8].split(".");
+                String[] date = lines[i-8].replace(".", "-").split("-");
                 switch (date[1]) {
                     case "01": date[1] = "Jan"; break;
                     case "02": date[1] = "Fev"; break;

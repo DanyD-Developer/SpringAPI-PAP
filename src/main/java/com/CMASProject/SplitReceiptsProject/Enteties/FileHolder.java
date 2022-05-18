@@ -16,9 +16,11 @@ public class FileHolder {
 
 
     public FileHolder(Config config) {
-        String pdfPath = config.getOriginFolder()+"\\"+config.getRecieptsPdfFileName();
-        String passwordPath = config.getOriginFolder()+"\\"+config.getNamesAndPasswordsFileName();
-
+        String pdfPath = config.getOriginFolder()+ "\\";
+        pdfPath += config.getRecieptsPdfFileName()+ ".pdf";
+        
+        String passwordPath = config.getOriginFolder()+"\\"+config.getNamesAndPasswordsFileName()+".txt"; 
+        
         PDFLoader(pdfPath);
         passwordLoader(passwordPath);
     }
