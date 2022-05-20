@@ -21,7 +21,6 @@ public class FileHolder {
         
         String passwordPath = config.getOriginFolder()+"\\"+config.getNamesAndPasswordsFileName()+".txt"; 
         
-        System.out.println(pdfPath);
         
         PDFLoader(pdfPath);
         passwordLoader(passwordPath);
@@ -32,7 +31,7 @@ public class FileHolder {
             PDDocument document = PDDocument.load(new File(path));
             wagesReceipts = document;
         } catch (Exception e) {
-            System.out.println("It was not possible to load the wages receipts pdf file. Error:"+e.getMessage()+"\nExiting program.");
+            System.out.println("It was not possible to load the wages receipts pdf file. Error: "+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(3);
         }
     }
@@ -41,9 +40,14 @@ public class FileHolder {
         try{
             List<String> lines = Collections.emptyList();
             lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
-            nifsAndPasswords = lines;
+            if(!(lines.isEmpty())) {
+            	nifsAndPasswords = lines;
+            }
+            else {
+            	throw new Exception(" The password file is Empty");
+            }
         } catch (Exception e) {
-            System.out.println("It was not possible to load the passwords file. Error:"+e.getMessage()+"\nExiting program.");
+            System.out.println("It was not possible to load the passwords file. Error: "+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(4);
         }
     }

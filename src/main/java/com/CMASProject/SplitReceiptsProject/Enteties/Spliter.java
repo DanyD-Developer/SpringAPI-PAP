@@ -43,7 +43,7 @@ public class Spliter {
 				}	 
 			}
 		} catch (IOException e) {
-			System.out.println("It was not possible to split the pdf. Error:"+e.getMessage()+"\nExiting program.");
+			System.out.println("It was not possible to split the pdf. Error: "+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(5);
 		}
 	}
