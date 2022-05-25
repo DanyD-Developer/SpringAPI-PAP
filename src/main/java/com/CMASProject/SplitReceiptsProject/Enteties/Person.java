@@ -20,12 +20,6 @@ public class Person {
 
         for (int i = 0; i < lines.length; i++) {
             if(lines[i].contains("Categoria:")){
-                String name = lines[i + 3];
-                String firtName = name.split(" ")[0];
-                String lastName = name.split(" ")[name.split(" ").length-1];
-                
-                this.setName(firtName+" "+lastName);
-
                 //Gets the date like this(24.05.2016) and turns into ->(Mai_2016)
                 String[] date = lines[i-8].replace(".", "-").split("-");
                 switch (date[1]) {
@@ -43,6 +37,7 @@ public class Person {
                     case "12": date[1] = "Dez"; break;
                     default: break;
                 }
+                
                 this.setProcessDate(date[1]+"_"+date[2]);
 
                 /*Explanation of 'Categoria:','lines[i+3]' & 'lines[i-8]':
@@ -60,6 +55,13 @@ public class Person {
                 .
                 .
                 */
+            }
+            else if(lines[i].contains("IBAN:")) {
+            	String name = lines[i - 3];
+                String firtName = name.split(" ")[0];
+                String lastName = name.split(" ")[name.split(" ").length-1];
+                
+                this.setName(firtName+" "+lastName);
             }
         }
     }
