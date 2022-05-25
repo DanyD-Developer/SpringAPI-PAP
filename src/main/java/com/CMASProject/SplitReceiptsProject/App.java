@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Config;
+import com.CMASProject.SplitReceiptsProject.Enteties.ConfigVerification;
 import com.CMASProject.SplitReceiptsProject.Enteties.ConfigWritter;
 import com.CMASProject.SplitReceiptsProject.Enteties.FileHolder;
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
@@ -23,15 +24,16 @@ public class App {
 		File Folderpath = new File(path);
 		
 		Properties props = new Properties();
-		
 		ConfigWritter.Write(FilePath, Folderpath);
-		//Load the properties file
+		
 		try (FileInputStream propsInput = new FileInputStream(FilePath)) {
 			props.load(propsInput);
 		} catch (Exception e) {
 			System.out.println("It was not possible to load the config file. Error: "+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(1);
 		}
+
+		ConfigVerification.Verification(FilePath,configFilePath,props);
 		
 		//Loads config
 		Config config = new Config(props, FilePath);
