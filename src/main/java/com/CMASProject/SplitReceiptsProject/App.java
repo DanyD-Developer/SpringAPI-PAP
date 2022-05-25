@@ -42,6 +42,22 @@ public class App {
 		//Splits
 		Spliter.spliter(fileHolder.getWagesReceipts(), personsList);
 		
+		//Checks if it was made any split
+		splitVerification(personsList);
+		
+		personsList.forEach((person) -> {if(person.getDocument() != null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
+		
+		try {
+			fileHolder.getWagesReceipts().close();
+		} catch (IOException e) {System.out.println("Error: "+e.getMessage());}
+		
+		System.out.println("Task Finished");
+	}
+
+	/**
+	 * @param personsList
+	 */
+	private static void splitVerification(List<Person> personsList) {
 		int f = 0;
 		for(Person p : personsList) {
 			if(p.getDocument() == null) {
@@ -54,15 +70,5 @@ public class App {
 			System.out.println("It was not performed any split, maybe you selected the wrong pdf file OR \nYou Are Missing NIFs in the Passwords file");
 			Runtime.getRuntime().exit(8);
 		}
-		
-		personsList.forEach((person) -> {if(person.getDocument() != null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
-		
-		try {
-			fileHolder.getWagesReceipts().close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println("Task Finished");
 	}
 }

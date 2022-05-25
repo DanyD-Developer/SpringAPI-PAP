@@ -20,6 +20,26 @@ public class Config {
 		if(!configProps.containsKey("ORIGIN_FOLDER") || !configProps.containsKey("DESTINATION_FOLDER") || !configProps.containsKey("PDFRECEIPTS_FILENAME") || !configProps.containsKey("PASSWORDS_FILENAME")) {
 			this.setInitialSetings(FilePath, folderpath);
 		}
+		else {
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Do you wish to split with the previous settings?");
+			System.out.println("Origin Folder: "+ this.getOriginFolder());
+			System.out.println("Destination Folder: "+ this.getDestinationFolder());
+			System.out.println("Pdf Receipt file name: "+ this.getRecieptsPdfFileName());
+			System.out.println("Passwords file name: "+ this.getNamesAndPasswordsFileName());
+			System.out.print("(y/n): "); String option = sc.nextLine().toLowerCase();
+			
+			switch(option) {
+				case "y":
+				break;
+				case "n":
+					this.setInitialSetings(FilePath, folderpath);
+				break;
+				default:
+					break;
+			}
+			sc.close();
+		}
 	}
 	
 	//Asks for the settings and saves them
