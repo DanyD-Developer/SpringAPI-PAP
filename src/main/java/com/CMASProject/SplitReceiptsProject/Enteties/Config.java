@@ -9,7 +9,8 @@ import java.util.Scanner;
 
 public class Config {
 	private Properties  configProps = new Properties();
-
+	private final Scanner sc = new Scanner(System.in);
+	
 	// Possible feature: allows the user to only do the split whithout protecting
 	// the files with password
 	// private boolean dontProtect;
@@ -21,30 +22,31 @@ public class Config {
 			this.setInitialSetings(FilePath, folderpath);
 		}
 		else {
-			Scanner sc = new Scanner(System.in);
-			System.out.println("Do you wish to split with the previous settings?");
-			System.out.println("Origin Folder: "+ this.getOriginFolder());
-			System.out.println("Destination Folder: "+ this.getDestinationFolder());
-			System.out.println("Pdf Receipt file name: "+ this.getRecieptsPdfFileName());
-			System.out.println("Passwords file name: "+ this.getNamesAndPasswordsFileName());
-			System.out.print("(y/n): "); String option = sc.nextLine().toLowerCase();
-			
-			switch(option) {
-				case "y":
-				break;
-				case "n":
-					this.setInitialSetings(FilePath, folderpath);
-				break;
-				default:
+				System.out.println("Do you wish to split with the previous settings?");
+				System.out.println("Origin Folder: "+ this.getOriginFolder());
+				System.out.println("Destination Folder: "+ this.getDestinationFolder());
+				System.out.println("Pdf Receipt file name: "+ this.getRecieptsPdfFileName());
+				System.out.println("Passwords file name: "+ this.getNamesAndPasswordsFileName());
+				
+				System.out.print("(y/n): "); String option = sc.nextLine().toLowerCase();
+				
+				
+				switch(option) {
+					case "y":
 					break;
-			}
-			sc.close();
+					case "n":
+						this.setInitialSetings(FilePath, folderpath);
+					break;
+					default:
+						break;
+				}
+				sc.close();	
 		}
 	}
 	
 	//Asks for the settings and saves them
 	private void setInitialSetings(File FilePath, File Folderpath) {
-		Scanner sc = new Scanner(System.in);
+		
 		
 		System.out.println("Insert the path to the folder where the pdf and password are located:");
 		String path_origin = sc.nextLine();
@@ -56,7 +58,6 @@ public class Config {
 		String passwordfile = sc.nextLine();
 		
 		while (path_origin.isEmpty() || path_destination.isEmpty() || pdfname.isEmpty() || passwordfile.isEmpty()){
-			System.out.println("Insert Again: ");
 			
 			System.out.println("Insert the path to the folder where the pdf and password are located:");
 			path_origin = sc.nextLine();
@@ -72,8 +73,6 @@ public class Config {
 		configProps.setProperty("DESTINATION_FOLDER", path_destination);
 		configProps.setProperty("PDFRECEIPTS_FILENAME", pdfname);
 		configProps.setProperty("PASSWORDS_FILENAME", passwordfile);
-		
-		sc.close();
 		
 		storeProperties(FilePath);
 
@@ -100,7 +99,6 @@ public class Config {
 		try (FileInputStream propsInput = new FileInputStream(FilePath)) {
 			configProps.load(propsInput);
 		} catch(FileNotFoundException e) {
-			System.out.println("AAAAAAAAAAAAAAAAAAAA");
 			this.createConfigFile(FilePath, Folderpath);
 			
 		} catch (Exception e) {
