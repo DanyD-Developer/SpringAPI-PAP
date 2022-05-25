@@ -1,15 +1,11 @@
 package com.CMASProject.SplitReceiptsProject;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Config;
-import com.CMASProject.SplitReceiptsProject.Enteties.ConfigVerification;
-import com.CMASProject.SplitReceiptsProject.Enteties.ConfigWritter;
 import com.CMASProject.SplitReceiptsProject.Enteties.FileHolder;
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import com.CMASProject.SplitReceiptsProject.Enteties.Protector;
@@ -23,20 +19,8 @@ public class App {
 		File FilePath = new File(configFilePath);
 		File Folderpath = new File(path);
 		
-		Properties props = new Properties();
-		ConfigWritter.Write(FilePath, Folderpath);
-		
-		try (FileInputStream propsInput = new FileInputStream(FilePath)) {
-			props.load(propsInput);
-		} catch (Exception e) {
-			System.out.println("It was not possible to load the config file. Error: "+e.getMessage()+"\nExiting program.");
-			Runtime.getRuntime().exit(1);
-		}
-
-		ConfigVerification.Verification(FilePath,configFilePath,props);
-		
 		//Loads config
-		Config config = new Config(props, FilePath);
+		Config config = new Config(Folderpath, FilePath);
 		
 		//Loads the files
 		FileHolder fileHolder = new FileHolder(config);

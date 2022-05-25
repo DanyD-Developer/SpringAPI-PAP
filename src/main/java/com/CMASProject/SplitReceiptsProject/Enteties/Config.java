@@ -2,43 +2,28 @@ package com.CMASProject.SplitReceiptsProject.Enteties;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Properties;
 import java.util.Scanner;
 
 public class Config {
-	// Origin folder is where the wage receipts pdf and NamesPassword.txt are
-	// located
-	// Other types of config can be added here.
-	private String originFolder;
-	private String destinationFolder;
-	private String recieptsPdfFileName;
-	private String namesAndPasswordsFileName;
+	private Properties  configProps = new Properties();
 
 	// Possible feature: allows the user to only do the split whithout protecting
 	// the files with password
 	// private boolean dontProtect;
 
-	public Config(Properties configProps, File FilePath) {
-			this.originFolder = configProps.getProperty("ORIGIN_FOLDER");
-			this.destinationFolder = configProps.getProperty("DESTINATION_FOLDER");
-			this.recieptsPdfFileName = configProps.getProperty("PDFRECEIPTS_FILENAME");
-			this.namesAndPasswordsFileName = configProps.getProperty("PASSWORDS_FILENAME");
-		try {
-			if (originFolder.isEmpty() || destinationFolder.isEmpty() || recieptsPdfFileName.isEmpty()
-					|| namesAndPasswordsFileName.isEmpty()) {
-				setConfigurations(configProps, FilePath);
-			}
-		}
-		catch(NullPointerException e){
-			String path = System.getenv().get("APPDATA") + "\\SplitProject";
-			File Folderpath = new File(path);
-			
-			ConfigWritter.Write(FilePath, Folderpath);
+	public Config(File folderpath, File FilePath) {
+		this.loadProperties(FilePath, folderpath);
+		
+		if(!configProps.containsKey("ORIGIN_FOLDER") || !configProps.containsKey("DESTINATION_FOLDER") || !configProps.containsKey("PDFRECEIPTS_FILENAME") || !configProps.containsKey("PASSWORDS_FILENAME")) {
+			this.setInitialSetings(FilePath, folderpath);
 		}
 	}
-
-	private void setConfigurations(Properties configProps, File FilePath) {
+	
+	//Asks for the settings and saves them
+	private void setInitialSetings(File FilePath, File Folderpath) {
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("Insert the path to the folder where the pdf and password are located:");
@@ -63,63 +48,89 @@ public class Config {
 			passwordfile = sc.nextLine();
 		}
 
-
 		configProps.setProperty("ORIGIN_FOLDER", path_origin);
 		configProps.setProperty("DESTINATION_FOLDER", path_destination);
 		configProps.setProperty("PDFRECEIPTS_FILENAME", pdfname);
 		configProps.setProperty("PASSWORDS_FILENAME", passwordfile);
+		
 		sc.close();
+		
+		storeProperties(FilePath);
+
+		loadProperties(FilePath, Folderpath);
+	}
+
+	/**
+	 * @param FilePath
+	 */
+	private void storeProperties(File FilePath) {
 		try {
 			configProps.store(new FileOutputStream(FilePath), null);
 		} catch (Exception e) {
 			System.out.println("It was not possible to save to the config file. Error: " + e.getMessage() + "\nExiting program.");
 			Runtime.getRuntime().exit(2);
 		}
-
-		// Load the properties file
+	}
+	
+	/**
+	 * @param FilePath
+	 */
+	private void loadProperties(File FilePath, File Folderpath) {
+		// Loads the properties file
 		try (FileInputStream propsInput = new FileInputStream(FilePath)) {
 			configProps.load(propsInput);
+		} catch(FileNotFoundException e) {
+			System.out.println("AAAAAAAAAAAAAAAAAAAA");
+			this.createConfigFile(FilePath, Folderpath);
+			
 		} catch (Exception e) {
-			System.out.println(
-					"It was not possible to load the config file. Error: " + e.getMessage() + "\nExiting program.");
+			System.out.println("It was not possible to load the config file. Error: " + e.getMessage() + "\nExiting program.");
 			Runtime.getRuntime().exit(1);
 		}
-
-		this.originFolder = configProps.getProperty("ORIGIN_FOLDER");
-		this.destinationFolder = configProps.getProperty("DESTINATION_FOLDER");
-		this.recieptsPdfFileName = configProps.getProperty("PDFRECEIPTS_FILENAME");
-		this.namesAndPasswordsFileName = configProps.getProperty("PASSWORDS_FILENAME");
 	}
+	
+	public void createConfigFile(File FilePath, File Folderpath) {
+		//Creates the folder in APPDATA\Roaming
+		if (!(Folderpath.exists())) {
+			if(Folderpath.mkdir()) {}
+		}
+		//Creates the Properties file and fills it with the settings
+		if (!(FilePath.exists())) {
+			setInitialSetings(FilePath, Folderpath);
+		}
+	}
+	
+	
 
 	public String getOriginFolder() {
-		return originFolder;
+		return configProps.getProperty("ORIGIN_FOLDER");
 	}
 
 	public void setOriginFolder(String originFolder) {
-		this.originFolder = originFolder;
+		this.configProps.setProperty("ORIGIN_FOLDER", originFolder);
 	}
 
 	public String getDestinationFolder() {
-		return destinationFolder;
+		return configProps.getProperty("DESTINATION_FOLDER");
 	}
 
 	public void setDestinationFolder(String destinationFolder) {
-		this.destinationFolder = destinationFolder;
+		this.configProps.setProperty("DESTINATION_FOLDER", destinationFolder);
 	}
 
 	public String getRecieptsPdfFileName() {
-		return recieptsPdfFileName;
+		return configProps.getProperty("PDFRECEIPTS_FILENAME");
 	}
 
 	public void setRecieptsPdfFileName(String recieptsPdfFileName) {
-		this.recieptsPdfFileName = recieptsPdfFileName;
+		this.configProps.setProperty("PDFRECEIPTS_FILENAME", recieptsPdfFileName);
 	}
 
 	public String getNamesAndPasswordsFileName() {
-		return namesAndPasswordsFileName;
+		return configProps.getProperty("PASSWORDS_FILENAME");
 	}
 
 	public void setNamesAndPasswordsFileName(String namesAndPasswordsFileName) {
-		this.namesAndPasswordsFileName = namesAndPasswordsFileName;
+		this.configProps.setProperty("PASSWORDS_FILENAME", namesAndPasswordsFileName);
 	}
 }
