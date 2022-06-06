@@ -5,15 +5,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+
 import com.CMASProject.SplitReceiptsProject.Enteties.Config;
 import com.CMASProject.SplitReceiptsProject.Enteties.FileHolder;
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import com.CMASProject.SplitReceiptsProject.Enteties.Protector;
 import com.CMASProject.SplitReceiptsProject.Enteties.Spliter;
 
+@SpringBootApplication
 public class App {
 
 	public static void main(String[] args) {
+		
+		SpringApplication.run(App.class, args);
+		
 		String path = System.getenv().get("APPDATA") + "\\SplitProject";
 		String configFilePath = path + "\\config.properties";
 		File FilePath = new File(configFilePath);
@@ -52,6 +60,7 @@ public class App {
 		} catch (IOException e) {System.out.println("Error: "+e.getMessage());}
 		
 		System.out.println("Task Finished");
+		System.exit(0);
 	}
 
 	/**
