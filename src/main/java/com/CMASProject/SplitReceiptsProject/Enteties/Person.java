@@ -1,14 +1,17 @@
 package com.CMASProject.SplitReceiptsProject.Enteties;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.springframework.core.io.FileSystemResource;
 
 public class Person {
     private String name;
     private Integer nif;
     private String password;
     private String processDate;
+    private String NodeID;
 
     private PDDocument document = null;
+    private FileSystemResource file;
 
     public Person(Integer nif, String password) {
         this.nif = nif;
@@ -108,6 +111,16 @@ public class Person {
     public void setProcessDate(String processData) {
         this.processDate = processData;
     }
-
-    
+    public String getNodeID() {
+        return NodeID;
+    }
+    public void setNodeID(String nodeID) {
+        NodeID = nodeID;
+    }
+    public FileSystemResource getFile() {
+        return file;
+    }
+    public void setFile(FileSystemResource file) {
+        this.file = file;
+    }
 }

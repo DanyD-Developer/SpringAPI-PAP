@@ -14,6 +14,9 @@ import com.CMASProject.SplitReceiptsProject.Enteties.FileHolder;
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import com.CMASProject.SplitReceiptsProject.Enteties.Protector;
 import com.CMASProject.SplitReceiptsProject.Enteties.Spliter;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.support.HttpRequestWrapper;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 public class App {
