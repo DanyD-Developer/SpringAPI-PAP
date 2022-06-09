@@ -2,12 +2,8 @@ package com.CMASProject.SplitReceiptsProject.Spring;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
 import static java.lang.String.format;
-
-import javax.websocket.OnClose;
 
 @Service
 public class TicketManager {
@@ -23,6 +19,10 @@ public class TicketManager {
 
     public void requestTicket(){
         JsonNode response = restTemplate.postForObject(URL, credentials, JsonNode.class);
+        if (response == null) {
+            System.out.println("Algo deu errado!");
+            return;
+        }
         this.ticket = response.get("entry").get("id").asText();
     }
 
