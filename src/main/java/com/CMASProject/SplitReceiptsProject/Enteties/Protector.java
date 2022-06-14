@@ -11,7 +11,7 @@ public class Protector {
     	try  {
 			AccessPermission accessPermission = new AccessPermission();
 			StandardProtectionPolicy spp = new StandardProtectionPolicy("12345", person.getPassword(),accessPermission);
-			spp.setEncryptionKeyLength(128);
+			spp.setEncryptionKeyLength(256);
 			spp.setPermissions(accessPermission);
 			person.getDocument().protect(spp);
 			person.getDocument().save(destinationPath + "\\Rv_"+person.getProcessDate()+" - "+person.getName()+".pdf");

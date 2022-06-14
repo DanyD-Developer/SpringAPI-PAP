@@ -1,4 +1,4 @@
-package com.CMASProject.SplitReceiptsProject.Spring;
+package com.CMASProject.SplitReceiptsProject.Controllers;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import org.springframework.core.io.FileSystemResource;
@@ -30,6 +30,7 @@ public class UploadFile {
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body,headers);
             ResponseEntity<String> request = restTemplate.postForEntity(URL,requestEntity,String.class);
+
             System.out.println("response status: " + request.getStatusCode());
             System.out.println("File Upload successful");
         }

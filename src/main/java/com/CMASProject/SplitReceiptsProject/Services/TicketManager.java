@@ -1,4 +1,4 @@
-package com.CMASProject.SplitReceiptsProject.Spring;
+package com.CMASProject.SplitReceiptsProject.Services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;

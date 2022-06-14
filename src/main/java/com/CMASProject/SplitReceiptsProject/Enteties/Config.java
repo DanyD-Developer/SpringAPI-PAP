@@ -40,7 +40,6 @@ public class Config {
 					default:
 						break;
 				}
-				sc.close();	
 		}
 	}
 	

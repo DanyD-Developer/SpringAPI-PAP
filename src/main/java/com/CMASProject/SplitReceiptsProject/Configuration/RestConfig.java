@@ -1,5 +1,6 @@
-package com.CMASProject.SplitReceiptsProject.Spring;
+package com.CMASProject.SplitReceiptsProject.Configuration;
 
+import com.CMASProject.SplitReceiptsProject.Services.TicketManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
