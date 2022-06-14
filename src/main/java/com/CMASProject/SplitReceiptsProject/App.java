@@ -6,27 +6,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.CMASProject.SplitReceiptsProject.Spring.UploadFile;
-import org.springframework.boot.SpringApplication;
+import com.CMASProject.SplitReceiptsProject.Controllers.NodeIdFinder;
+import com.CMASProject.SplitReceiptsProject.Configuration.RestConfig;
+import com.CMASProject.SplitReceiptsProject.Services.TicketManager;
+import com.CMASProject.SplitReceiptsProject.Controllers.UploadFile;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Config;
 import com.CMASProject.SplitReceiptsProject.Enteties.FileHolder;
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import com.CMASProject.SplitReceiptsProject.Enteties.Protector;
 import com.CMASProject.SplitReceiptsProject.Enteties.Spliter;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.support.HttpRequestWrapper;
-import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 public class App {
 
 	public static void main(String[] args) {
 		
-		SpringApplication.run(App.class, args);
+		//SpringApplication.run(App.class, args);
 		
 		String path = System.getenv().get("APPDATA") + "\\SplitProject";
 		String configFilePath = path + "\\config.properties";
@@ -61,16 +59,25 @@ public class App {
 		
 		personsList.forEach((person) -> {if(person.getDocument() != null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
 
-		//Question to the user if he wants to send the files to alfresco
-		UploadFile uploadFile = new UploadFile();
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Pretende enviar os Ficheiros para o alfresco");
-		System.out.println("(y/n)"); String answer = sc.nextLine().toLowerCase();
 
+		UploadFile uploadFile = new UploadFile();
+
+		RestConfig restConfig = new RestConfig();
+
+		TicketManager ticketManager = new TicketManager(restConfig.restTemplate());
+
+		NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket());
+
+		Scanner sc = new Scanner(System.in);
+
+		//Question to the user if he wants to send the files to alfresco
+		System.out.println("Do you wish to send the files to alfresco?");
+		System.out.print("(y/n): "); String answer = sc.nextLine().toLowerCase();
 		switch(answer){
 			case "y":
+				nodeIdFinder.setNodeIDs(personsList);
 				fileHolder.setFilePerPerson(new File(config.getDestinationFolder()),personsList);
-				uploadFile.fileUpload(personsList,"1234");
+				uploadFile.fileUpload(personsList,ticketManager.getTicket());
 				break;
 			default:
 				break;
@@ -79,9 +86,11 @@ public class App {
 		try {
 			fileHolder.getWagesReceipts().close();
 		} catch (IOException e) {System.out.println("Error: "+e.getMessage());}
-		
+
+		ticketManager.closeTicket();
 		System.out.println("Task Finished");
 		System.exit(0);
+		sc.close();
 	}
 
 	/**
