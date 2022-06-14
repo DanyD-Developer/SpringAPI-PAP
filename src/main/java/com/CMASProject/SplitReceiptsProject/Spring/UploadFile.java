@@ -17,7 +17,7 @@ import java.util.List;
 public class UploadFile {
     RestTemplate restTemplate = new RestTemplate();
 
-    public String fileUpload(List<Person> persons,String ticket){
+    public void fileUpload(List<Person> persons,String ticket){
         for(Person person: persons){
             String URL = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/nodes/"+person.getNodeID()+"/children?alf_ticket="+ticket;
 
@@ -29,12 +29,9 @@ public class UploadFile {
             body.add("description", "Wage Receipt form june");
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body,headers);
-            System.out.println(requestEntity);
-
             ResponseEntity<String> request = restTemplate.postForEntity(URL,requestEntity,String.class);
             System.out.println("response status: " + request.getStatusCode());
             System.out.println("File Upload successful");
         }
-        return "Problems";
     }
 }
