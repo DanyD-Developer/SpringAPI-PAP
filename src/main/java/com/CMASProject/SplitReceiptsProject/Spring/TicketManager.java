@@ -1,6 +1,7 @@
 package com.CMASProject.SplitReceiptsProject.Spring;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import static java.lang.String.format;
@@ -15,9 +16,10 @@ public class TicketManager {
 
     public TicketManager(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        requestTicket();
     }
 
-    public void requestTicket(){
+    private void requestTicket(){
         JsonNode response = restTemplate.postForObject(URL, credentials, JsonNode.class);
         if (response == null) {
             System.out.println("Algo deu errado!");

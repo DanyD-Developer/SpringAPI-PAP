@@ -5,9 +5,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class Config {
+public class RestConfig {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public TicketManager ticketManager(){
+        return new TicketManager(new RestTemplate());
     }
 }
