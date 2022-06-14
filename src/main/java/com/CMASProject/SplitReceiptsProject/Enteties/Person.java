@@ -7,6 +7,7 @@ public class Person {
     private Integer nif;
     private String password;
     private String processDate;
+    private String nodeID;
 
     private PDDocument document = null;
 
@@ -66,13 +67,6 @@ public class Person {
         }
     }
 
-    public Person(String name, Integer nif, String password) {
-        this.name = name;
-        this.nif = nif;
-        this.password = password;
-
-        this.document = null;
-    }
 
     public String getName() {
         return name;
@@ -109,5 +103,12 @@ public class Person {
         this.processDate = processData;
     }
 
-    
+    public String getNodeID() {
+        return nodeID;
+    }
+    public void setNodeID(String nodeID) {
+        this.nodeID = nodeID;
+    }
+
+
 }
