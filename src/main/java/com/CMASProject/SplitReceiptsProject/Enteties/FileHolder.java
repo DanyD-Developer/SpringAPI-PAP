@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.springframework.core.io.FileSystemResource;
 
 public class FileHolder {
     
@@ -64,5 +65,18 @@ public class FileHolder {
     }
     public void setNifsAndPasswords(List<String> nifsAndPasswords) {
         this.nifsAndPasswords = nifsAndPasswords;
+    }
+    public void setFilePerPerson(final File folder, final List<Person> persons) {
+        for (final File fileEntry : folder.listFiles()) {
+            for(Person person : persons){
+                if(person.getName() != null){
+                    if(fileEntry.getName().contains(person.getName())) {
+                        String path = folder +"\\"+ fileEntry.getName();
+                        FileSystemResource file = new FileSystemResource(path);
+                        person.setFile(file);
+                    }
+                }
+            }
+        }
     }
 }

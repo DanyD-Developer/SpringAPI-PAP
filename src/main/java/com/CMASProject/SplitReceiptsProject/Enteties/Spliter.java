@@ -8,6 +8,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+/**
+ * @author Daniel Duarte ( daniel.duarte@cmas-systems.com )
+ * @since <next-release>
+ */
 public class Spliter {
 	
 	public static void spliter(PDDocument document, List<Person> list){
