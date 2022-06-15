@@ -1,4 +1,4 @@
-package com.CMASProject.SplitReceiptsProject.Spring;
+package com.CMASProject.SplitReceiptsProject.Controllers;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,7 +39,9 @@ public class NodeIdFinder {
 
         //Attributes each folder id to the correspondent person.
         for(Person person : list){
-            String name = person.getName().replace(" ",".").toLowerCase();
+            String name = person.getName();
+            if(name == null){ continue; }
+            name = name.replace(" ",".").toLowerCase();
             name = specialCharacterRemoval(name);
             if(map.containsKey(name)){
                 person.setNodeID(map.get(name));
