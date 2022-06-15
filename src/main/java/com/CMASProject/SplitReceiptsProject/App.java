@@ -77,8 +77,9 @@ public class App {
 
 
 		System.out.println("Task Finished");
-		System.exit(0);
 		sc.close();
+		System.exit(0);
+
 	}
 
 

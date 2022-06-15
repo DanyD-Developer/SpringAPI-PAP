@@ -37,7 +37,7 @@ public class UploadFile {
 
             MultiValueMap<String,Object> body = new LinkedMultiValueMap<>();
             body.add("filedata", person.getFile());
-            body.add("description", "Wage Receipt form june");
+            body.add("overwrite", true);
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body,headers);
             ResponseEntity<String> request = restConfig.restTemplate().postForEntity(URL,requestEntity,String.class);
