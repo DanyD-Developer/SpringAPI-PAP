@@ -35,7 +35,11 @@ public class NodeIdFinder {
 
     public void setNodeIDs(List<Person> list){
         String userHomeID = getUserHomeID();
-        HashMap<String, String> map = getSubFoldersIDs(userHomeID);
+        //HashMap<String, String> map = getSubFoldersIDs(userHomeID);
+
+        //TODO Lembrar de tirar as duas linhas de codigo abaixo
+        String testID = getSubFoldersIDs(userHomeID).get("test");
+        HashMap<String, String> map = getSubFoldersIDs(testID);
 
         //Attributes each folder id to the correspondent person.
         for(Person person : list){

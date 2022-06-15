@@ -1,10 +1,10 @@
 package com.CMASProject.SplitReceiptsProject.Spring;
 
+import com.CMASProject.SplitReceiptsProject.Controllers.NodeIdFinder;
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.CMASProject.SplitReceiptsProject.Services.TicketManager;
 import org.springframework.web.client.RestTemplate;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,20 +15,19 @@ public class TestMain {
 //        String a = String.valueOf(response.get("entry").get("id"));
 //        System.out.println(a);
 
-        TicketManager ticketManager = new TicketManager(new RestTemplate());
-        ticketManager.requestTicket();
-        NodeIdFinder nodeIdFinder = new NodeIdFinder(new RestTemplate(), ticketManager.getTicket());
-        List<Person> list = new ArrayList<Person>();
-        Person person1 = new Person(1,"a");
-        person1.setName("Carlos Santana");
-        list.add(person1);
-        Person person2 = new Person(2,"b");
-        person2.setName("João Pinto");
-        list.add(person2);
-        nodeIdFinder.Algo(list);
-
-        for(Person person : list){
-            System.out.println(person.getNodeID());
-        }
+//        TicketManager ticketManager = new TicketManager(new RestTemplate());
+//        NodeIdFinder nodeIdFinder = new NodeIdFinder(new RestTemplate(), ticketManager.getTicket());
+//        List<Person> list = new ArrayList<Person>();
+//        Person person1 = new Person(1,"a");
+//        person1.setName("Carlos Santana");
+//        list.add(person1);
+//        Person person2 = new Person(2,"b");
+//        person2.setName("João Pinto");
+//        list.add(person2);
+//        nodeIdFinder.Algo(list);
+//
+//        for(Person person : list){
+//            System.out.println(person.getNodeID());
+//        }
     }
 }

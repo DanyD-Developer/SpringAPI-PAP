@@ -66,7 +66,7 @@ public class FileHolder {
     public void setNifsAndPasswords(List<String> nifsAndPasswords) {
         this.nifsAndPasswords = nifsAndPasswords;
     }
-    public void setFilePerPerson(final File folder, final List<Person> persons) {
+    public void setFilePerPerson(File folder, List<Person> persons) {
         for (final File fileEntry : folder.listFiles()) {
             for(Person person : persons){
                 if(person.getName() != null){

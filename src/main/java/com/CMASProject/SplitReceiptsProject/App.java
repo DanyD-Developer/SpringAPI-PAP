@@ -10,7 +10,6 @@ import com.CMASProject.SplitReceiptsProject.Controllers.NodeIdFinder;
 import com.CMASProject.SplitReceiptsProject.Configuration.RestConfig;
 import com.CMASProject.SplitReceiptsProject.Services.TicketManager;
 import com.CMASProject.SplitReceiptsProject.Controllers.UploadFile;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Config;
@@ -59,15 +58,6 @@ public class App {
 		
 		personsList.forEach((person) -> {if(person.getDocument() != null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
 
-
-		UploadFile uploadFile = new UploadFile();
-
-		RestConfig restConfig = new RestConfig();
-
-		TicketManager ticketManager = new TicketManager(restConfig.restTemplate());
-
-		NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket());
-
 		Scanner sc = new Scanner(System.in);
 
 		//Question to the user if he wants to send the files to alfresco
@@ -75,9 +65,7 @@ public class App {
 		System.out.print("(y/n): "); String answer = sc.nextLine().toLowerCase();
 		switch(answer){
 			case "y":
-				nodeIdFinder.setNodeIDs(personsList);
-				fileHolder.setFilePerPerson(new File(config.getDestinationFolder()),personsList);
-				uploadFile.fileUpload(personsList,ticketManager.getTicket());
+				UploadFile.fileUpload(personsList, config, fileHolder);
 				break;
 			default:
 				break;
@@ -87,11 +75,12 @@ public class App {
 			fileHolder.getWagesReceipts().close();
 		} catch (IOException e) {System.out.println("Error: "+e.getMessage());}
 
-		ticketManager.closeTicket();
+
 		System.out.println("Task Finished");
 		System.exit(0);
 		sc.close();
 	}
+
 
 	/**
 	 * @param personsList
@@ -107,7 +96,7 @@ public class App {
 		
 		if(f == personsList.size()) {
 			System.out.println("It was not performed any split, maybe you selected the wrong pdf file OR \nYou Are Missing NIFs in the Passwords file");
-			Runtime.getRuntime().exit(8);
+			Runtime.getRuntime().exit(18);
 		}
 	}
 
