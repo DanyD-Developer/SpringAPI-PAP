@@ -40,15 +40,19 @@ public class UploadFile {
             for(Person person: persons) {
                 String URL = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/nodes/" + person.getNodeID() + "/children?alf_ticket=" + ticketManager.getTicket();
 
+                //Make the headers be the read by form data
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+                //Crate a map and save the file and the property overwrite for the post
                 MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
                 body.add("filedata", person.getFile());
                 body.add("overwrite", true);
 
+                //Make the request with the data and make a post with the URL given
                 HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
                 ResponseEntity<String> request = restConfig.restTemplate().postForEntity(URL, requestEntity, String.class);
+
 
                 if (request.getStatusCode() == HttpStatus.CREATED) {
                     System.out.println("File Upload successful");
