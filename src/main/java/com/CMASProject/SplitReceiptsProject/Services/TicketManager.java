@@ -3,7 +3,11 @@ package com.CMASProject.SplitReceiptsProject.Services;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.ConnectException;
+
 import static java.lang.String.format;
 
 @Service
@@ -14,7 +18,7 @@ public class TicketManager {
     private String ticket;
     private final RestTemplate restTemplate;
 
-    public TicketManager(RestTemplate restTemplate) {
+    public TicketManager(RestTemplate restTemplate) throws ResourceAccessException {
         this.restTemplate = restTemplate;
         requestTicket();
     }
