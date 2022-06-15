@@ -44,7 +44,9 @@ public class NodeIdFinder {
 
         //Attributes each folder id to the correspondent person.
         for(Person person : list){
-            String name = person.getName().replace(" ",".").toLowerCase();
+            String name = person.getName();
+            if(name == null){ continue; }
+            name = name.replace(" ",".").toLowerCase();
             name = specialCharacterRemoval(name);
             if(map.containsKey(name)){
                 person.setNodeID(map.get(name));
