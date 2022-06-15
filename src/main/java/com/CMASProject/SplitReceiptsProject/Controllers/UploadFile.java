@@ -47,9 +47,6 @@ public class UploadFile {
 
                 if (request.getStatusCode() == HttpStatus.CREATED) {
                     System.out.println("File Upload successful");
-                    System.out.println("------------Body------------");
-                    System.out.println(request.getStatusCode().getReasonPhrase());
-                    System.out.println("------------Finished Body----");
                 } else {
                     System.out.println("Error: " + request.getBody() + "" + request.getStatusCode().getReasonPhrase());
                 }
