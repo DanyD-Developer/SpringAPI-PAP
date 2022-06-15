@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -21,31 +22,59 @@ import java.util.List;
 public class UploadFile {
 
     public static void fileUpload(List<Person> persons, Config config, FileHolder fileHolder){
-        RestConfig restConfig = new RestConfig();
 
-        TicketManager ticketManager = new TicketManager(restConfig.restTemplate());
-        NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket());
+        try{
+            RestConfig restConfig = new RestConfig();
 
-        nodeIdFinder.setNodeIDs(persons);
-        fileHolder.setFilePerPerson(new File(config.getDestinationFolder()), persons);
+            TicketManager ticketManager = new TicketManager(restConfig.restTemplate());
+            NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket());
 
-        for(Person person: persons){
-            String URL = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/nodes/"+person.getNodeID()+"/children?alf_ticket="+ticketManager.getTicket();
+            nodeIdFinder.setNodeIDs(persons);
+            fileHolder.setFilePerPerson(new File(config.getDestinationFolder()), persons);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            for(Person person: persons) {
+                String URL = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/node/" + person.getNodeID() + "/children?alf_ticket=" + ticketManager.getTicket();
 
-            MultiValueMap<String,Object> body = new LinkedMultiValueMap<>();
-            body.add("filedata", person.getFile());
-            body.add("overwrite", true);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body,headers);
-            ResponseEntity<String> request = restConfig.restTemplate().postForEntity(URL,requestEntity,String.class);
+                MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                body.add("filedata", person.getFile());
+                body.add("overwrite", true);
 
-            System.out.println("response status: " + request.getStatusCode());
-            System.out.println("File Upload successful");
+                HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+                ResponseEntity<String> request = restConfig.restTemplate().postForEntity(URL, requestEntity, String.class);
+
+                if (request.getStatusCode() == HttpStatus.CREATED) {
+                    System.out.println("File Upload successful");
+                    System.out.println("------------Body------------");
+                    System.out.println(request.getStatusCode().getReasonPhrase());
+                    System.out.println("------------Finished Body----");
+                } else {
+                    System.out.println("Error: " + request.getBody() + "" + request.getStatusCode().getReasonPhrase());
+                }
+            }
+            ticketManager.closeTicket();
         }
-
-        ticketManager.closeTicket();
+        catch(HttpClientErrorException.NotFound e1){
+            System.out.println("It was not possible to send files to Alfresco");
+            System.out.println("Error: "+e1.getStatusCode() +" - "+ e1.getResponseBodyAsString());
+            System.exit(19);
+        }
+        catch (HttpClientErrorException.BadRequest e2){
+            System.out.println("It was not possible to send files to Alfresco");
+            System.out.println("Error: "+e2.getStatusCode() +" - "+ e2.getResponseBodyAsString());
+            System.exit(20);
+        }
+        catch (HttpClientErrorException.Unauthorized e3){
+            System.out.println("It was not possible to send files to Alfresco");
+            System.out.println("Error: "+e3.getStatusCode() +" - "+ e3.getResponseBodyAsString());
+            System.exit(21);
+        }
+        catch (HttpClientErrorException e4){
+            System.out.println("It was not possible to send files to Alfresco");
+            System.out.println("Error: "+e4.getStatusCode() +" - "+ e4.getResponseBodyAsString());
+            System.exit(22);
+        }
     }
 }
