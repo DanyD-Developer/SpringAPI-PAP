@@ -1,4 +1,4 @@
-package com.CMASProject.SplitReceiptsProject.Spring;
+package com.CMASProject.SplitReceiptsProject.Controllers;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,7 +35,12 @@ public class NodeIdFinder {
 
     public void setNodeIDs(List<Person> list){
         String userHomeID = getUserHomeID();
-        HashMap<String, String> map = getSubFoldersIDs(userHomeID);
+
+        //TODO Lembrar de tirar as duas linhas de codigo abaixo
+        String testID = getSubFoldersIDs(userHomeID).get("test");
+        HashMap<String, String> map = getSubFoldersIDs(testID);
+        
+        //HashMap<String, String> map = getSubFoldersIDs(userHomeID);
 
         //Attributes each folder id to the correspondent person.
         for(Person person : list){
