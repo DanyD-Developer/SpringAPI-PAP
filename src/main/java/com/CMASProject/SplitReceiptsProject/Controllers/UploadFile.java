@@ -54,7 +54,7 @@ public class UploadFile {
                 ResponseEntity<String> request = restConfig.restTemplate().postForEntity(URL, requestEntity, String.class);
 
                 if (request.getStatusCode() == HttpStatus.CREATED) {
-                    System.out.println("File Upload successful");
+                    System.out.println(person.getName() + " File Upload successfully");
                 } else {
                     System.out.println("Error: " + request.getBody() + "" + request.getStatusCode().getReasonPhrase());
                 }
