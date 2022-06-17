@@ -1,5 +1,6 @@
 package com.CMASProject.SplitReceiptsProject.Enteties;
 
+import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,6 +11,7 @@ import java.util.Scanner;
 public class Config {
 	private Properties  configProps = new Properties();
 	private final Scanner sc = new Scanner(System.in);
+	private File filePath;
 	
 	// Possible feature: allows the user to only do the split whithout protecting
 	// the files with password
@@ -17,6 +19,7 @@ public class Config {
 
 	public Config(File folderpath, File FilePath) {
 		this.loadProperties(FilePath, folderpath);
+		this.filePath = FilePath;
 		
 		if(!configProps.containsKey("ORIGIN_FOLDER") || !configProps.containsKey("DESTINATION_FOLDER") || !configProps.containsKey("PDFRECEIPTS_FILENAME") || !configProps.containsKey("PASSWORDS_FILENAME")) {
 			this.setInitialSetings(FilePath, folderpath);
@@ -116,8 +119,19 @@ public class Config {
 			setInitialSetings(FilePath, Folderpath);
 		}
 	}
-	
-	
+
+	public void updateAlfrescoSettings() {
+		System.out.println("Insert the URL to alfresco. (Ex: https://alfresco-nowo.cmas-systems.com)");
+		String url = sc.nextLine();
+		while(url.isEmpty()){
+			System.out.println("Insert the URL to alfresco. (Ex: https://alfresco-nowo.cmas-systems.com)");
+			url = sc.nextLine();
+		}
+
+		configProps.setProperty("ALFRESCO_URL",url);
+
+		storeProperties(filePath);
+	}
 
 	public String getOriginFolder() {
 		return configProps.getProperty("ORIGIN_FOLDER");
@@ -150,4 +164,11 @@ public class Config {
 	public void setNamesAndPasswordsFileName(String namesAndPasswordsFileName) {
 		this.configProps.setProperty("PASSWORDS_FILENAME", namesAndPasswordsFileName);
 	}
+
+	public String getAlfrescoURL() {
+		return configProps.getProperty("ALFRESCO_URL", "");
+	}
+//	public String getAlfrescoFoldersPath() {
+//		return configProps.getProperty("ALFRESCO_FOLDERS_PATH", "");
+//	}
 }

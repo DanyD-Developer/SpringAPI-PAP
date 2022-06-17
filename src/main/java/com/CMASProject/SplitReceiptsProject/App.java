@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.CMASProject.SplitReceiptsProject.Controllers.NodeIdFinder;
-import com.CMASProject.SplitReceiptsProject.Configuration.RestConfig;
-import com.CMASProject.SplitReceiptsProject.Services.TicketManager;
 import com.CMASProject.SplitReceiptsProject.Controllers.UploadFile;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -62,10 +59,15 @@ public class App {
 
 		//Question to the user if he wants to send the files to alfresco
 		System.out.println("Do you wish to send the files to alfresco?");
-		System.out.print("(y/n): "); String answer = sc.nextLine().toLowerCase();
+		System.out.println("Current settings:");
+		System.out.println("URL: "+ config.getAlfrescoURL());
+		System.out.print("(y/s/n): "); String answer = sc.nextLine().toLowerCase();
 		switch(answer){
 			case "y":
 				UploadFile.fileUpload(personsList, config, fileHolder);
+				break;
+			case "s":
+				config.updateAlfrescoSettings();
 				break;
 			default:
 				break;
@@ -83,9 +85,6 @@ public class App {
 	}
 
 
-	/**
-	 * @param personsList
-	 */
 	private static void splitVerification(List<Person> personsList) {
 		int f = 0;
 		for(Person p : personsList) {

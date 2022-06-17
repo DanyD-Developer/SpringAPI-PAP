@@ -3,7 +3,6 @@ package com.CMASProject.SplitReceiptsProject.Controllers;
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.Normalizer;
@@ -17,43 +16,50 @@ public class NodeIdFinder {
     //This is the ID of the folder where all the oder folders are contained
     //private static final String userHomeID = "64ba469b-980b-4523-8930-426e3645c4f0";
 
-    private static final String URL = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/nodes";
+    private static String URL;//= "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/nodes";
 
     private final RestTemplate restTemplate;
     private final String ticket;
 
-    public NodeIdFinder(RestTemplate restTemplate, String ticket) {
+    public NodeIdFinder(RestTemplate restTemplate, String ticket, String url) {
         this.restTemplate = restTemplate;
         this.ticket = ticket;
+        this.URL = url + "/alfresco/api/-default-/public/alfresco/versions/1/nodes";
     }
 
-    private String getUserHomeID(){
-        HashMap<String, String> map = getSubFoldersIDs("-root-");
-
-        return map.get("User Homes");
+    private String getWagesReceiptsFolderID(){
+        String id = getSubFoldersIDs("-root-").get("people");
+        id = getSubFoldersIDs(id).get("documentLibrary");
+        id = getSubFoldersIDs(id).get("12.WAGES RECEIPTS");
+        return id;
     }
 
-    public void setNodeIDs(List<Person> list){
-        String userHomeID = getUserHomeID();
-        //HashMap<String, String> map = getSubFoldersIDs(userHomeID);
+    public void assignFoldersID(List<Person> list){
 
-        //TODO Lembrar de tirar as duas linhas de codigo abaixo
-        String testID = getSubFoldersIDs(userHomeID).get("test");
-        HashMap<String, String> map = getSubFoldersIDs(testID);
+        HashMap<String, String> map = getSubFoldersIDs(getWagesReceiptsFolderID());
 
-        //Attributes each folder id to the correspondent person.
+        //Attributes each WR folder id to the correspondent person.
         for(Person person : list){
             String name = person.getName();
             if(name == null){ continue; }
-            name = name.replace(" ",".").toLowerCase();
-            name = specialCharacterRemoval(name);
+//            name = name.replace(" ",".").toLowerCase();
+//            name = specialCharacterRemoval(name);
             if(map.containsKey(name)){
-                person.setNodeID(map.get(name));
+                String personWgFolderID = getSubFoldersIDs(map.get(name)).getOrDefault("WR",null);
+                if(personWgFolderID != null){
+                    person.setNodeID(personWgFolderID);
+                }
+                else{
+                    System.out.println("Person '"+name+"' does not have a WR folder!");
+                }
+            }
+            else{
+                System.out.println("Could not find folder of '"+name+"' in alfresco! Make sure that the folder in alfresco have same name has the person ('"+name+"').");
             }
         }
     }
 
-    //returns a HashMap containing all the sub folders IDs of the given node ID
+    //returns a HashMap containing all the sub folders IDs of the given node ID; Hashmap(nameFolder, folderID)
     private HashMap<String, String> getSubFoldersIDs(String nodeID){
         JsonNode jsonNode = restTemplate.getForObject(format("%s/%s/children?alf_ticket=%s",URL, nodeID, ticket), JsonNode.class);
         JsonNode entries = jsonNode.get("list").get("entries");

@@ -8,23 +8,16 @@ import com.CMASProject.SplitReceiptsProject.Services.TicketManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
 
 
 import java.io.File;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 @Controller
 public class UploadFile {
@@ -35,8 +28,8 @@ public class UploadFile {
             RestConfig restConfig = new RestConfig();
             TicketManager ticketManager = new TicketManager(restConfig.restTemplate());
 
-            NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket());
-            nodeIdFinder.setNodeIDs(persons);
+            NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket(), config.getAlfrescoURL());
+            nodeIdFinder.assignFoldersID(persons);
 
             fileHolder.setFilePerPerson(new File(config.getDestinationFolder()), persons);
 
