@@ -18,18 +18,26 @@ public class TicketManager {
     private String ticket;
     private final RestTemplate restTemplate;
 
-    public TicketManager(RestTemplate restTemplate) throws ResourceAccessException {
+    public TicketManager(RestTemplate restTemplate){
         this.restTemplate = restTemplate;
         requestTicket();
     }
 
     private void requestTicket(){
-        JsonNode response = restTemplate.postForObject(URL, credentials, JsonNode.class);
-        if (response == null) {
-            System.out.println("Algo deu errado!");
-            return;
+        try{
+            JsonNode response = restTemplate.postForObject(URL, credentials, JsonNode.class);
+            if (response == null) {
+                System.out.println("Algo deu errado!");
+                return;
+            }
+            this.ticket = response.get("entry").get("id").asText();
+        }catch (ResourceAccessException e){
+            System.out.println("It was not possible to send files to Alfresco.");
+            System.out.println("Connection Time out");
+            System.out.println("Exiting Program.");
+            System.exit(24);
         }
-        this.ticket = response.get("entry").get("id").asText();
+
     }
 
     public void closeTicket(){

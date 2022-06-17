@@ -11,11 +11,14 @@ public class Protector {
     
 	public static void protectPersonPdf(Person person, String destinationPath){
     	try  {
+			//Read the PDF files and save on the person
 			person.getDocument().save(destinationPath + "\\Rv_"+person.getProcessDate()+" - "+person.getName()+".pdf" );
 			PDDocument document = PDDocument.load(new File(destinationPath + "\\Rv_"+person.getProcessDate()+" - "+person.getName()+".pdf" ));
 			person.setDocument(document);
+
+			//Encrypt the pdf document
 			AccessPermission accessPermission = new AccessPermission();
-												//TODO Remove and replace for the person Password
+												//TODO Replace the ownerPassword for the person Password
 			StandardProtectionPolicy spp = new StandardProtectionPolicy("12345", person.getPassword(),accessPermission);
 			spp.setEncryptionKeyLength(256);
 			spp.setPermissions(accessPermission);
@@ -23,6 +26,7 @@ public class Protector {
 			person.getDocument().save(destinationPath + "\\Rv_"+person.getProcessDate()+" - "+person.getName()+".pdf");
 			person.getDocument().close();
 			document.close();
+
 		} catch (IOException e) {
 			System.out.println("It was not possible to protect the pdfs. Error: "+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(6);

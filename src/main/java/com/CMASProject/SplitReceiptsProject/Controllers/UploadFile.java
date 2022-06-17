@@ -21,7 +21,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 @Controller
 public class UploadFile {
@@ -30,11 +33,11 @@ public class UploadFile {
 
         try{
             RestConfig restConfig = new RestConfig();
-
             TicketManager ticketManager = new TicketManager(restConfig.restTemplate());
-            NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket());
 
+            NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket());
             nodeIdFinder.setNodeIDs(persons);
+
             fileHolder.setFilePerPerson(new File(config.getDestinationFolder()), persons);
 
             for(Person person: persons) {
@@ -44,6 +47,7 @@ public class UploadFile {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+
                 //Crate a map and save the file and the property overwrite for the post
                 MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
                 body.add("filedata", person.getFile());
@@ -52,7 +56,6 @@ public class UploadFile {
                 //Make the request with the data and make a post with the URL given
                 HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
                 ResponseEntity<String> request = restConfig.restTemplate().postForEntity(URL, requestEntity, String.class);
-
 
                 if (request.getStatusCode() == HttpStatus.CREATED) {
                     System.out.println("File Upload successful");
@@ -64,13 +67,13 @@ public class UploadFile {
         }
         catch (HttpClientErrorException e4){
             System.out.println("It was not possible to send files to Alfresco.");
-            System.out.println("Error: "+e4.getStatusCode() +" - "+ makeErrorMessage(e4.getResponseBodyAsString()));
+            System.out.println("Error: "+e4.getStatusCode().value()+ " "+e4.getStatusText() +" - "+ makeErrorMessage(e4.getResponseBodyAsString()));
             System.out.println("Exiting Program.");
             System.exit(22);
         }
-        catch (ResourceAccessException e){
+        catch (ResourceAccessException e5){
             System.out.println("It was not possible to send files to Alfresco.");
-            System.out.println("Connection time out.");
+            System.out.println("Error: "+ e5.getMessage());
             System.out.println("Exiting Program.");
             System.exit(23);
         }
@@ -79,7 +82,7 @@ public class UploadFile {
     private static String makeErrorMessage(String JSONmensage) {
         try {
             JsonNode root = new ObjectMapper().readTree(JSONmensage);
-            return root.get("error").get("errorKey").asText();
+            return root.get("error").get("briefSummary").asText();
         } catch (JsonProcessingException e) {
             return JSONmensage;
         }
