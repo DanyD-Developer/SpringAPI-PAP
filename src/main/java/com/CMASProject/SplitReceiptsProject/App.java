@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 import com.CMASProject.SplitReceiptsProject.Controllers.UploadFile;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Config;
@@ -20,7 +22,7 @@ public class App {
 
 	public static void main(String[] args) {
 		
-		//SpringApplication.run(App.class, args);
+		SpringApplication.run(App.class, args);
 		
 		String path = System.getenv().get("APPDATA") + "\\SplitProject";
 		String configFilePath = path + "\\config.properties";
@@ -64,7 +66,11 @@ public class App {
 		System.out.print("(y/s/n): "); String answer = sc.nextLine().toLowerCase();
 		switch(answer){
 			case "y":
-				UploadFile.fileUpload(personsList, config, fileHolder);
+				if(Objects.equals(config.getAlfrescoURL(), "")){
+					config.updateAlfrescoSettings();
+				}
+				UploadFile uploadFile = new UploadFile();
+				uploadFile.fileUpload(personsList, config, fileHolder);
 				break;
 			case "s":
 				config.updateAlfrescoSettings();

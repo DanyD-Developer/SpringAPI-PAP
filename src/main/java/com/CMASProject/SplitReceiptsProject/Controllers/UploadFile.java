@@ -8,12 +8,16 @@ import com.CMASProject.SplitReceiptsProject.Services.TicketManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 
 import java.io.File;
@@ -22,13 +26,15 @@ import java.util.List;
 @Controller
 public class UploadFile {
 
-    public static void fileUpload(List<Person> persons, Config config, FileHolder fileHolder){
+    //TODO Fix the RestTemplate Injection
+    private RestTemplate restTemplate = new RestTemplate();
+
+    public void fileUpload(List<Person> persons, Config config, FileHolder fileHolder){
 
         try{
-            RestConfig restConfig = new RestConfig();
-            TicketManager ticketManager = new TicketManager(restConfig.restTemplate(), config.getAlfrescoURL());
+            TicketManager ticketManager = new TicketManager(this.restTemplate, config.getAlfrescoURL());
 
-            NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket(), config.getAlfrescoURL());
+            NodeIdFinder nodeIdFinder = new NodeIdFinder(this.restTemplate,ticketManager.getTicket(), config.getAlfrescoURL());
             nodeIdFinder.assignFoldersID(persons);
 
             fileHolder.setFilePerPerson(new File(config.getDestinationFolder()), persons);
@@ -51,10 +57,10 @@ public class UploadFile {
 
                 //Make the request with the data and make a post with the URL given
                 HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-                ResponseEntity<String> request = restConfig.restTemplate().postForEntity(URL, requestEntity, String.class);
+                ResponseEntity<String> request = this.restTemplate.postForEntity(URL, requestEntity, String.class);
 
                 if (request.getStatusCode() == HttpStatus.CREATED) {
-                    System.out.println(person.getName() + " File Upload successfully");
+                    System.out.println(person.getName() + " - File Upload successfully");
                 } else {
                     System.out.println("Error: " + request.getBody() + "" + request.getStatusCode().getReasonPhrase());
                 }

@@ -2,6 +2,7 @@ package com.CMASProject.SplitReceiptsProject.Controllers;
 
 import com.CMASProject.SplitReceiptsProject.Enteties.Person;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,13 +19,17 @@ public class NodeIdFinder {
 
     private static String URL;//= "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/nodes";
 
-    private final RestTemplate restTemplate;
-    private final String ticket;
+    private RestTemplate restTemplate;
+
+    private String ticket;
 
     public NodeIdFinder(RestTemplate restTemplate, String ticket, String url) {
         this.restTemplate = restTemplate;
         this.ticket = ticket;
         this.URL = url + "/alfresco/api/-default-/public/alfresco/versions/1/nodes";
+    }
+
+    public NodeIdFinder() {
     }
 
     private String getWagesReceiptsFolderID(){

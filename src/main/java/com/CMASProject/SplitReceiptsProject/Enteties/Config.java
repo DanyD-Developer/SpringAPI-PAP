@@ -32,6 +32,7 @@ public class Config {
 				System.out.println("Passwords file name: "+ this.getNamesAndPasswordsFileName());
 				
 				System.out.print("(y/n): "); String option = sc.nextLine().toLowerCase();
+				System.out.println();
 				
 				
 				switch(option) {

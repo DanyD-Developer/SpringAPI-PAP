@@ -16,7 +16,8 @@ public class TicketManager {
     private static String credentials = "{\"userId\":\"config\",\"password\":\"nowo123\"}";
 
     private String ticket;
-    private final RestTemplate restTemplate;
+
+    private RestTemplate restTemplate;
 
     public TicketManager(RestTemplate restTemplate, String url){
         this.restTemplate = restTemplate;
@@ -24,9 +25,12 @@ public class TicketManager {
         requestTicket();
     }
 
+    public TicketManager() {
+    }
+
     private void requestTicket(){
         try{
-            JsonNode response = restTemplate.postForObject(URL, credentials, JsonNode.class);
+            JsonNode response = this.restTemplate.postForObject(URL, credentials, JsonNode.class);
             if (response == null) {
                 System.out.println("Algo deu errado!");
                 return;
