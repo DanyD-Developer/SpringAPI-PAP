@@ -11,12 +11,10 @@
 	</parent>
 	<groupId>com.CMASProject</groupId>
 	<artifactId>SplitReceiptsProject</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.2.0</version>
 	<packaging>jar</packaging>
 
 	<name>SplitReceiptsProject</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -82,12 +80,12 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.22.1</version>
 				</plugin>
-				<!--
+
 				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>3.0.2</version>
 				</plugin>
-				-->
+
 				<plugin>
 					<artifactId>maven-install-plugin</artifactId>
 					<version>2.5.2</version>
@@ -125,21 +123,21 @@
 					</executions>
 				</plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<configuration>
-						<archive>
-							<manifest>
-								<addClasspath>true</addClasspath>
-								<classpathPrefix>libs/</classpathPrefix>
-								<mainClass>
-                    com.baeldung.executable.ExecutableMavenJar
-                </mainClass>
-							</manifest>
-						</archive>
-					</configuration>
-				</plugin>
+<!--				<plugin>-->
+<!--					<groupId>org.apache.maven.plugins</groupId>-->
+<!--					<artifactId>maven-jar-plugin</artifactId>-->
+<!--					<configuration>-->
+<!--						<archive>-->
+<!--							<manifest>-->
+<!--								<addClasspath>true</addClasspath>-->
+<!--								<classpathPrefix>libs/</classpathPrefix>-->
+<!--								<mainClass>-->
+<!--                    com.baeldung.executable.ExecutableMavenJar-->
+<!--                </mainClass>-->
+<!--							</manifest>-->
+<!--						</archive>-->
+<!--					</configuration>-->
+<!--				</plugin>-->
 
 			</plugins>
 		</pluginManagement>
