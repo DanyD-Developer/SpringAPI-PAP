@@ -15,8 +15,8 @@ public class RestConfig {
         return new RestTemplate();
     }
 
-    @Bean
-    public TicketManager ticketManager() throws ResourceAccessException {
-        return new TicketManager(new RestTemplate());
-    }
+//    @Bean
+//    public TicketManager ticketManager() throws ResourceAccessException {
+//        return new TicketManager(new RestTemplate());
+//    }
 }

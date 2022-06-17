@@ -12,14 +12,15 @@ import static java.lang.String.format;
 
 @Service
 public class TicketManager {
-    private static final String URL = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/authentication/versions/1/tickets";
-    private static final String credentials = "{\"userId\":\"config\",\"password\":\"nowo123\"}";
+    private static String URL;        // = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/authentication/versions/1/tickets";
+    private static String credentials = "{\"userId\":\"config\",\"password\":\"nowo123\"}";
 
     private String ticket;
     private final RestTemplate restTemplate;
 
-    public TicketManager(RestTemplate restTemplate){
+    public TicketManager(RestTemplate restTemplate, String url){
         this.restTemplate = restTemplate;
+        this.URL = url+ "/alfresco/api/-default-/public/authentication/versions/1/tickets";
         requestTicket();
     }
 

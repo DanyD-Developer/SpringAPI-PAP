@@ -26,7 +26,7 @@ public class UploadFile {
 
         try{
             RestConfig restConfig = new RestConfig();
-            TicketManager ticketManager = new TicketManager(restConfig.restTemplate());
+            TicketManager ticketManager = new TicketManager(restConfig.restTemplate(), config.getAlfrescoURL());
 
             NodeIdFinder nodeIdFinder = new NodeIdFinder(restConfig.restTemplate(),ticketManager.getTicket(), config.getAlfrescoURL());
             nodeIdFinder.assignFoldersID(persons);
@@ -34,6 +34,9 @@ public class UploadFile {
             fileHolder.setFilePerPerson(new File(config.getDestinationFolder()), persons);
 
             for(Person person: persons) {
+                if(person.getNodeID() == null){
+                    continue;
+                }
                 String URL = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/nodes/" + person.getNodeID() + "/children?alf_ticket=" + ticketManager.getTicket();
 
                 //Make the headers be the read by form data

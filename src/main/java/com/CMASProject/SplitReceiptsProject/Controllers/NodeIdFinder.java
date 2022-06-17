@@ -28,9 +28,10 @@ public class NodeIdFinder {
     }
 
     private String getWagesReceiptsFolderID(){
-        String id = getSubFoldersIDs("-root-").get("people");
+        String id = getSubFoldersIDs("-root-").get("Sites");
+        id = getSubFoldersIDs(id).get("people");
         id = getSubFoldersIDs(id).get("documentLibrary");
-        id = getSubFoldersIDs(id).get("12.WAGES RECEIPTS");
+        id = getSubFoldersIDs(id).get("12.WAGE RECEIPTS");
         return id;
     }
 
