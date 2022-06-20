@@ -38,8 +38,16 @@ public class TicketManager {
         }catch (ResourceAccessException e){
             System.out.println("It was not possible to send files to Alfresco.");
             System.out.println("Connection Time out");
+            System.out.println("Make sure you typed the URL correctly or if you have internet connection");
             System.out.println("Exiting Program.");
             System.exit(24);
+        }
+        catch (IllegalArgumentException e){
+            System.out.println("It was not possible to send files to Alfresco.");
+            System.out.println("Error: "+ e.getMessage());
+            System.out.println("Make sure you typed the URL correctly");
+            System.out.println("Exiting Program.");
+            System.exit(25);
         }
 
     }
