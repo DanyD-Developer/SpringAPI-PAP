@@ -31,12 +31,15 @@ public class Config {
 				System.out.println("Pdf Receipt file name: "+ this.getRecieptsPdfFileName());
 				System.out.println("Passwords file name: "+ this.getNamesAndPasswordsFileName());
 				
-				System.out.print("(y/n): "); String option = sc.nextLine().toLowerCase();
+				System.out.print("(y/c/n): "); String option = sc.nextLine().toLowerCase();
 				
 				
 				switch(option) {
 					case "y":
 					break;
+					case "c":
+						updateWageReceiptsName();
+						break;
 					case "n":
 						this.setInitialSetings(FilePath, folderpath);
 					break;
@@ -44,6 +47,18 @@ public class Config {
 						break;
 				}
 		}
+	}
+
+	private void updateWageReceiptsName(){
+		String name = "";
+		while (name.isEmpty()){
+			System.out.println("Type the new name of the wages receipts file.");
+			name = sc.nextLine();
+		}
+
+		setRecieptsPdfFileName(name);
+
+		storeProperties(filePath);
 	}
 	
 	//Asks for the settings and saves them
