@@ -1,5 +1,6 @@
 package com.CMASProject.SplitReceiptsProject.Services;
 
+import com.CMASProject.SplitReceiptsProject.Enteties.Config;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,15 +14,16 @@ import static java.lang.String.format;
 @Service
 public class TicketManager {
     private static String URL;        // = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/authentication/versions/1/tickets";
-    private static String credentials = "{\"userId\":\"config\",\"password\":\"nowo123\"}";
+    private static String credentials;// = "{\"userId\":\"config\",\"password\":\"nowo123\"}";
 
     private String ticket;
 
     private RestTemplate restTemplate;
 
-    public TicketManager(RestTemplate restTemplate, String url){
+    public TicketManager(RestTemplate restTemplate, Config config){
         this.restTemplate = restTemplate;
-        this.URL = url+ "/alfresco/api/-default-/public/authentication/versions/1/tickets";
+        URL = config.getAlfrescoURL() + "/alfresco/api/-default-/public/authentication/versions/1/tickets";
+        credentials = "{\"userId\":\""+config.getAlfrescoUsername()+"\",\"password\":\""+config.getAlfrescoPassword()+"\"}";
         requestTicket();
     }
 

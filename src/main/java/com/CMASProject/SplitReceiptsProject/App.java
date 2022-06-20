@@ -57,23 +57,30 @@ public class App {
 		
 		personsList.forEach((person) -> {if(person.getDocument() != null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
 
+		System.out.println("Split Done!\n");
+
 		Scanner sc = new Scanner(System.in);
 
 		//Question to the user if he wants to send the files to alfresco
 		System.out.println("Do you wish to send the files to alfresco?");
 		System.out.println("Current settings:");
-		System.out.println("URL: "+ config.getAlfrescoURL());
+		System.out.println("URL: " + config.getAlfrescoURL());
+		System.out.println("User: "+ config.getAlfrescoUsername());
+		System.out.println("Password: "+ config.getAlfrescoPassword());
 		System.out.print("(y/s/n): "); String answer = sc.nextLine().toLowerCase();
+
+		UploadFile uploadFile = new UploadFile();
+
 		switch(answer){
 			case "y":
 				if(Objects.equals(config.getAlfrescoURL(), "")){
 					config.updateAlfrescoSettings();
 				}
-				UploadFile uploadFile = new UploadFile();
 				uploadFile.fileUpload(personsList, config, fileHolder);
 				break;
 			case "s":
 				config.updateAlfrescoSettings();
+				uploadFile.fileUpload(personsList, config, fileHolder);
 				break;
 			default:
 				break;

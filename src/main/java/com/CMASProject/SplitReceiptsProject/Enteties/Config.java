@@ -32,7 +32,6 @@ public class Config {
 				System.out.println("Passwords file name: "+ this.getNamesAndPasswordsFileName());
 				
 				System.out.print("(y/n): "); String option = sc.nextLine().toLowerCase();
-				System.out.println();
 				
 				
 				switch(option) {
@@ -124,12 +123,22 @@ public class Config {
 	public void updateAlfrescoSettings() {
 		System.out.println("Insert the URL to alfresco. (Ex: https://alfresco-nowo.cmas-systems.com)");
 		String url = sc.nextLine();
-		while(url.isEmpty()){
+		System.out.println("Insert the username.");
+		String username = sc.nextLine();
+		System.out.println("Insert th PassWord.");
+		String password = sc.nextLine();
+		while(url.isEmpty() || username.isEmpty() || password.isEmpty()){
 			System.out.println("Insert the URL to alfresco. (Ex: https://alfresco-nowo.cmas-systems.com)");
 			url = sc.nextLine();
+			System.out.println("Insert the username.");
+			username = sc.nextLine();
+			System.out.println("Insert th PassWord.");
+			password = sc.nextLine();
 		}
 
 		configProps.setProperty("ALFRESCO_URL",url);
+		configProps.setProperty("ALFRESCO_USERNAME",username);
+		configProps.setProperty("ALFRESCO_PASSWORD",password);
 
 		storeProperties(filePath);
 	}
@@ -169,7 +178,12 @@ public class Config {
 	public String getAlfrescoURL() {
 		return configProps.getProperty("ALFRESCO_URL", "");
 	}
-//	public String getAlfrescoFoldersPath() {
-//		return configProps.getProperty("ALFRESCO_FOLDERS_PATH", "");
-//	}
+
+	public String getAlfrescoUsername() {
+		return configProps.getProperty("ALFRESCO_USERNAME", "");
+	}
+
+	public String getAlfrescoPassword() {
+		return configProps.getProperty("ALFRESCO_PASSWORD", "");
+	}
 }

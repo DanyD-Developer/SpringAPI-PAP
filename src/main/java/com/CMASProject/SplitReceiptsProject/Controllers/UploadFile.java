@@ -32,7 +32,7 @@ public class UploadFile {
     public void fileUpload(List<Person> persons, Config config, FileHolder fileHolder){
 
         try{
-            TicketManager ticketManager = new TicketManager(this.restTemplate, config.getAlfrescoURL());
+            TicketManager ticketManager = new TicketManager(this.restTemplate, config);
 
             NodeIdFinder nodeIdFinder = new NodeIdFinder(this.restTemplate,ticketManager.getTicket(), config.getAlfrescoURL());
             nodeIdFinder.assignFoldersID(persons);
