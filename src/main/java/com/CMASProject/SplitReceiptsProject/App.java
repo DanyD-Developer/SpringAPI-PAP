@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-import com.CMASProject.SplitReceiptsProject.Controllers.UploadFile;
+import com.CMASProject.SplitReceiptsProject.controllers.UploadFile;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.CMASProject.SplitReceiptsProject.Enteties.Config;
-import com.CMASProject.SplitReceiptsProject.Enteties.FileHolder;
-import com.CMASProject.SplitReceiptsProject.Enteties.Person;
-import com.CMASProject.SplitReceiptsProject.Enteties.Protector;
-import com.CMASProject.SplitReceiptsProject.Enteties.Spliter;
+import com.CMASProject.SplitReceiptsProject.enteties.Config;
+import com.CMASProject.SplitReceiptsProject.enteties.FileHolder;
+import com.CMASProject.SplitReceiptsProject.enteties.Person;
+import com.CMASProject.SplitReceiptsProject.enteties.Protector;
+import com.CMASProject.SplitReceiptsProject.enteties.Spliter;
 
 @SpringBootApplication
 public class App {

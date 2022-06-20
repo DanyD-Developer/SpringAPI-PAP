@@ -1,4 +1,4 @@
-package com.CMASProject.SplitReceiptsProject.Enteties;
+package com.CMASProject.SplitReceiptsProject.enteties;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;

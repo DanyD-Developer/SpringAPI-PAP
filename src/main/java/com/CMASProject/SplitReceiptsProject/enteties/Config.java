@@ -1,6 +1,5 @@
-package com.CMASProject.SplitReceiptsProject.Enteties;
+package com.CMASProject.SplitReceiptsProject.enteties;
 
-import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

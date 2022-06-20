@@ -1,4 +1,4 @@
-package com.CMASProject.SplitReceiptsProject.Enteties;
+package com.CMASProject.SplitReceiptsProject.enteties;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.core.io.FileSystemResource;

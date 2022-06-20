@@ -1,20 +1,16 @@
-package com.CMASProject.SplitReceiptsProject.Controllers;
+package com.CMASProject.SplitReceiptsProject.controllers;
 
-import com.CMASProject.SplitReceiptsProject.Configuration.RestConfig;
-import com.CMASProject.SplitReceiptsProject.Enteties.Config;
-import com.CMASProject.SplitReceiptsProject.Enteties.FileHolder;
-import com.CMASProject.SplitReceiptsProject.Enteties.Person;
-import com.CMASProject.SplitReceiptsProject.Services.TicketManager;
+import com.CMASProject.SplitReceiptsProject.enteties.Config;
+import com.CMASProject.SplitReceiptsProject.enteties.FileHolder;
+import com.CMASProject.SplitReceiptsProject.enteties.Person;
+import com.CMASProject.SplitReceiptsProject.services.TicketManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
