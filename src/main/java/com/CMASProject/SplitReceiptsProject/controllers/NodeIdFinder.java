@@ -1,8 +1,7 @@
-package com.CMASProject.SplitReceiptsProject.Controllers;
+package com.CMASProject.SplitReceiptsProject.controllers;
 
-import com.CMASProject.SplitReceiptsProject.Enteties.Person;
+import com.CMASProject.SplitReceiptsProject.enteties.Person;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 

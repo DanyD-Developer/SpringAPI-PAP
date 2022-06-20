@@ -1,13 +1,10 @@
-package com.CMASProject.SplitReceiptsProject.Services;
+package com.CMASProject.SplitReceiptsProject.services;
 
-import com.CMASProject.SplitReceiptsProject.Enteties.Config;
+import com.CMASProject.SplitReceiptsProject.enteties.Config;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.ConnectException;
 
 import static java.lang.String.format;
 
