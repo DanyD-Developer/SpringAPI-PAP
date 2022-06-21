@@ -15,7 +15,7 @@ import com.CMASProject.SplitReceiptsProject.enteties.Config;
 import com.CMASProject.SplitReceiptsProject.enteties.FileHolder;
 import com.CMASProject.SplitReceiptsProject.enteties.Person;
 import com.CMASProject.SplitReceiptsProject.enteties.Protector;
-import com.CMASProject.SplitReceiptsProject.enteties.Spliter;
+import com.CMASProject.SplitReceiptsProject.enteties.Splitter;
 
 @SpringBootApplication
 public class App {
@@ -47,15 +47,13 @@ public class App {
 			System.out.println("One of the NIFs does not contains password. Error: "+e.getMessage()+"\nExiting Program");
 			Runtime.getRuntime().exit(8);
 		}
-	
  
 		//Splits
-		Spliter.spliter(fileHolder.getWagesReceipts(), personsList);
-		
-		//Checks if it was made any split
+		Splitter.splitter(fileHolder.getWagesReceipts(), personsList);
+		//Checks if it was done any split
 		splitVerification(personsList);
 		
-		personsList.forEach((person) -> {if(person.getDocument() != null) {Protector.protectPersonPdf(person, config.getDestinationFolder());}});
+		Protector.protectPdfs(personsList, config);
 
 		System.out.println("Split Done!\n");
 

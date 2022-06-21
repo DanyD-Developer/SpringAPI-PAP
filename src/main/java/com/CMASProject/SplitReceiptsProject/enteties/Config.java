@@ -11,10 +11,6 @@ public class Config {
 	private final Properties  configProps = new Properties();
 	private final Scanner sc = new Scanner(System.in);
 	private final File filePath;
-	
-	// Possible feature: allows the user to only do the split whithout protecting
-	// the files with password
-	// private boolean dontProtect;
 
 	public Config(File folderpath, File FilePath) {
 		this.loadProperties(FilePath, folderpath);
