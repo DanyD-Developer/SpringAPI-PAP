@@ -30,12 +30,13 @@ public class Protector {
 			spp.setEncryptionKeyLength(256);
 			spp.setPermissions(accessPermission);
 			person.getDocument().protect(spp);
-			person.getDocument().save(destinationPath + "\\Rv_"+person.getProcessDate()+" - "+person.getName()+".pdf");
+			String fileName = "Rv_"+person.getProcessDate()+" - "+person.getName()+".pdf";
+			person.getDocument().save(destinationPath + "\\"+fileName);
 			person.getDocument().close();
 			document.close();
-
+			System.out.println("Created - '"+fileName+"'");
 		} catch (IOException e) {
-			System.out.println("It was not possible to protect the pdfs of person "+ person.getName()+".\nError: "+e.getMessage());
+			System.out.println("It was not possible to protect the pdfs of "+ person.getName()+".\nError: "+e.getMessage());
 		}
 	}
 }
