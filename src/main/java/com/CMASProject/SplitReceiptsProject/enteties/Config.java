@@ -3,14 +3,14 @@ package com.CMASProject.SplitReceiptsProject.enteties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.util.Properties;
 import java.util.Scanner;
 
 public class Config {
-	private Properties  configProps = new Properties();
+	private final Properties  configProps = new Properties();
 	private final Scanner sc = new Scanner(System.in);
-	private File filePath;
+	private final File filePath;
 	
 	// Possible feature: allows the user to only do the split whithout protecting
 	// the files with password
@@ -27,7 +27,7 @@ public class Config {
 				System.out.println("Do you wish to split with the previous settings?");
 				System.out.println("Origin Folder: "+ this.getOriginFolder());
 				System.out.println("Destination Folder: "+ this.getDestinationFolder());
-				System.out.println("Pdf Receipt file name: "+ this.getRecieptsPdfFileName());
+				System.out.println("Pdf Receipt file name: "+ this.getReceiptsPdfFileName());
 				System.out.println("Passwords file name: "+ this.getNamesAndPasswordsFileName());
 				
 				System.out.print("(y/c/n): "); String option = sc.nextLine().toLowerCase();
@@ -55,9 +55,9 @@ public class Config {
 			name = sc.nextLine();
 		}
 
-		setRecieptsPdfFileName(name);
+		setReceiptsPdfFileName(name);
 
-		storeProperties(filePath);
+		storeProperties();
 	}
 	
 	//Asks for the settings and saves them
@@ -90,35 +90,30 @@ public class Config {
 		configProps.setProperty("PDFRECEIPTS_FILENAME", pdfname);
 		configProps.setProperty("PASSWORDS_FILENAME", passwordfile);
 		
-		storeProperties(FilePath);
+		storeProperties();
 
 		loadProperties(FilePath, Folderpath);
 	}
 
-	/**
-	 * @param FilePath
-	 */
-	private void storeProperties(File FilePath) {
+
+	private void storeProperties() {
 		try {
-			configProps.store(new FileOutputStream(FilePath), null);
+			configProps.store(Files.newOutputStream(this.filePath.toPath()), null);
 		} catch (Exception e) {
 			System.out.println("It was not possible to save to the config file. Error: " + e.getMessage() + "\nExiting program.");
 			Runtime.getRuntime().exit(2);
 		}
 	}
-	
-	/**
-	 * @param FilePath
-	 */
-	private void loadProperties(File FilePath, File Folderpath) {
+
+	private void loadProperties(File FilePath, File FolderPath) {
 		// Loads the properties file
 		try (FileInputStream propsInput = new FileInputStream(FilePath)) {
 			configProps.load(propsInput);
 		} catch(FileNotFoundException e) {
-			this.createConfigFile(FilePath, Folderpath);
+			this.createConfigFile(FilePath, FolderPath);
 			
 		} catch (Exception e) {
-			System.out.println("It was not possible to load the config file. Error: " + e.getMessage() + "\nExiting program.");
+			System.out.println("It was not possible to load the config file.\n Error: " + e.getMessage() + "\nExiting program.");
 			Runtime.getRuntime().exit(1);
 		}
 	}
@@ -126,7 +121,9 @@ public class Config {
 	public void createConfigFile(File FilePath, File Folderpath) {
 		//Creates the folder in APPDATA\Roaming
 		if (!(Folderpath.exists())) {
-			if(Folderpath.mkdir()) {}
+			if(!Folderpath.mkdir()) {
+				System.out.println("It was not possible to create the Folder in APPDATA.");
+			}
 		}
 		//Creates the Properties file and fills it with the settings
 		if (!(FilePath.exists())) {
@@ -154,40 +151,40 @@ public class Config {
 		configProps.setProperty("ALFRESCO_USERNAME",username);
 		configProps.setProperty("ALFRESCO_PASSWORD",password);
 
-		storeProperties(filePath);
+		storeProperties();
 	}
 
 	public String getOriginFolder() {
 		return configProps.getProperty("ORIGIN_FOLDER");
 	}
 
-	public void setOriginFolder(String originFolder) {
-		this.configProps.setProperty("ORIGIN_FOLDER", originFolder);
-	}
+//	public void setOriginFolder(String originFolder) {
+//		this.configProps.setProperty("ORIGIN_FOLDER", originFolder);
+//	}
 
 	public String getDestinationFolder() {
 		return configProps.getProperty("DESTINATION_FOLDER");
 	}
 
-	public void setDestinationFolder(String destinationFolder) {
-		this.configProps.setProperty("DESTINATION_FOLDER", destinationFolder);
-	}
+//	public void setDestinationFolder(String destinationFolder) {
+//		this.configProps.setProperty("DESTINATION_FOLDER", destinationFolder);
+//	}
 
-	public String getRecieptsPdfFileName() {
+	public String getReceiptsPdfFileName() {
 		return configProps.getProperty("PDFRECEIPTS_FILENAME");
 	}
 
-	public void setRecieptsPdfFileName(String recieptsPdfFileName) {
-		this.configProps.setProperty("PDFRECEIPTS_FILENAME", recieptsPdfFileName);
+	public void setReceiptsPdfFileName(String receiptsPdfFileName) {
+		this.configProps.setProperty("PDFRECEIPTS_FILENAME", receiptsPdfFileName);
 	}
 
 	public String getNamesAndPasswordsFileName() {
 		return configProps.getProperty("PASSWORDS_FILENAME");
 	}
 
-	public void setNamesAndPasswordsFileName(String namesAndPasswordsFileName) {
-		this.configProps.setProperty("PASSWORDS_FILENAME", namesAndPasswordsFileName);
-	}
+//	public void setNamesAndPasswordsFileName(String namesAndPasswordsFileName) {
+//		this.configProps.setProperty("PASSWORDS_FILENAME", namesAndPasswordsFileName);
+//	}
 
 	public String getAlfrescoURL() {
 		return configProps.getProperty("ALFRESCO_URL", "");
