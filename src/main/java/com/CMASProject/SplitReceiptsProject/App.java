@@ -27,31 +27,19 @@ public class App {
 		String path = System.getenv().get("APPDATA") + "\\SplitProject";
 		String configFilePath = path + "\\config.properties";
 		File FilePath = new File(configFilePath);
-		File Folderpath = new File(path);
+		File FolderPath = new File(path);
 		
 		//Loads config
-		Config config = new Config(Folderpath, FilePath);
+		Config config = new Config(FolderPath, FilePath);
 		
 		//Loads the files
 		FileHolder fileHolder = new FileHolder(config);
 
-		//Create each person 
-		List<Person> personsList = new ArrayList<>();
-		try {
-			fileHolder.getNifsAndPasswords().stream().map((nifAndPassword) -> nifAndPassword.split("###")).forEach((nifAndPassword) -> personsList.add(new Person(Integer.parseInt(nifAndPassword[0]),nifAndPassword[1])));
-		} catch (NumberFormatException e) {
-			System.out.println("Error when reading the NIFs. Error: "+e.getMessage()+"\nExiting Program");
-			Runtime.getRuntime().exit(7);
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("One of the NIFs does not contains password. Error: "+e.getMessage()+"\nExiting Program");
-			Runtime.getRuntime().exit(8);
-		}
- 
-		//Splits
+		//Create a list of each person (each person is created according to the NIF in the passwords file)
+		List<Person> personsList = generatePersonsList(fileHolder);
+
+		//Splits the pdfs and Checks if it was done any split
 		Splitter.splitter(fileHolder.getWagesReceipts(), personsList);
-		//Checks if it was done any split
-		splitVerification(personsList);
 		
 		Protector.protectPdfs(personsList, config);
 
@@ -92,24 +80,21 @@ public class App {
 		System.out.println("Task Finished");
 		sc.close();
 		System.exit(0);
-
 	}
 
-
-	private static void splitVerification(List<Person> personsList) {
-		int f = 0;
-		for(Person p : personsList) {
-			if(p.getDocument() == null) {
-				f++;
-			}
-
+	public static List<Person> generatePersonsList(FileHolder fileHolder) {
+		List<Person> personsList = new ArrayList<>();
+		try {
+			fileHolder.getNifsAndPasswords().stream().map((nifAndPassword) -> nifAndPassword.split("###")).forEach((nifAndPassword) -> personsList.add(new Person(Integer.parseInt(nifAndPassword[0]),nifAndPassword[1])));
+		} catch (NumberFormatException e) {
+			System.out.println("Error when reading the NIFs.\nError: "+e.getMessage()+"\nExiting Program");
+			Runtime.getRuntime().exit(7);
 		}
-		
-		if(f == personsList.size()) {
-			System.out.println("It was not performed any split, maybe you selected the wrong pdf file OR \nYou Are Missing NIFs in the Passwords file");
-			Runtime.getRuntime().exit(18);
+		catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println("One of the NIFs does not contains password.\nError: "+e.getMessage()+"\nExiting Program");
+			Runtime.getRuntime().exit(8);
 		}
+
+		return personsList;
 	}
-
-
 }

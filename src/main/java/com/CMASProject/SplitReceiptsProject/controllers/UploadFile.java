@@ -22,8 +22,7 @@ import java.util.List;
 @Controller
 public class UploadFile {
 
-    //TODO Fix the RestTemplate Injection
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public void fileUpload(List<Person> persons, Config config, FileHolder fileHolder){
 

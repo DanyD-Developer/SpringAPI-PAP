@@ -14,7 +14,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
  */
 public class Splitter {
 	
-	public static void splitter(PDDocument document, List<Person> list){
+	public static void splitter(PDDocument document, List<Person> personList){
     	try {
     		//Create the Documents and the property to read the text
 			PDFTextStripper pdfStripper = new PDFTextStripper();
@@ -28,13 +28,13 @@ public class Splitter {
 				String text = pdfStripper.getText(document);
 
 				//Make a cycle per person to give the correspondents page/pages
-				for (Person person : list) {
+				for (Person person : personList) {
 					if (text.contains(person.getNif().toString())) {
 						PDPageTree listTree = document.getPages();
 						PDPage page = listTree.get(i - 1);
 						doc = new PDDocument();
 
-						//If equals to the last niff means he have more than 1 page
+						//If equals to the last niff means he has more than 1 page
 						if (person.getNif() == lastNif) {
 							//Add a page and set the document of the person
 							if(lastDoc != null){
@@ -51,12 +51,27 @@ public class Splitter {
 							lastNif = person.getNif();
 						}
 					}
-				}	 
-				
+				}
 			}
+			splitVerification(personList);
 		} catch (IOException e) {
 			System.out.println("It was not possible to split the pdf.\nError: "+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(5);
+		}
+	}
+
+	//Checks if the person got any split document
+	public static void splitVerification(List<Person> personsList) {
+		int f = 0;
+		for(Person p : personsList) {
+			if(p.getDocument() == null) {
+				f++;
+			}
+		}
+
+		if(f == personsList.size()) {
+			System.out.println("It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file");
+			Runtime.getRuntime().exit(1);
 		}
 	}
 }

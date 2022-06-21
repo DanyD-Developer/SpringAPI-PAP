@@ -61,10 +61,10 @@ public class Person {
             }
             else if(lines[i].contains("IBAN:")) {
             	String name = lines[i - 3];
-                String firtName = name.split(" ")[0];
+                String firstName = name.split(" ")[0];
                 String lastName = name.split(" ")[name.split(" ").length-1];
                 
-                this.setName(firtName+" "+lastName);
+                this.setName(firstName+" "+lastName);
             }
         }
     }
