@@ -22,12 +22,7 @@ import java.util.List;
 @Controller
 public class UploadFile {
 
-    //TODO Fix the RestTemplate Injection
     private final RestTemplate restTemplate = new RestTemplate();
-
-    //public UploadFile(RestTemplate restTemplate) {
-        //this.restTemplate = restTemplate;
-    //}
 
     public void fileUpload(List<Person> persons, Config config, FileHolder fileHolder){
 
@@ -60,10 +55,8 @@ public class UploadFile {
                 ResponseEntity<String> request = this.restTemplate.postForEntity(URL, requestEntity, String.class);
 
                 if (request.getStatusCode() == HttpStatus.CREATED) {
-                    //return ResponseEntity.ok().body(person.getName() + " - File Upload successfully");
                     System.out.println(person.getName() + " - File Upload successfully");
                 } else {
-                    //return ResponseEntity.ok().body("Error: " + request.getBody() + "" + request.getStatusCode().getReasonPhrase());
                     System.out.println("Error: " + request.getBody() + "" + request.getStatusCode().getReasonPhrase());
                 }
             }

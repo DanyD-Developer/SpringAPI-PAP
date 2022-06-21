@@ -4,8 +4,8 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.core.io.FileSystemResource;
@@ -18,7 +18,7 @@ public class FileHolder {
 
     public FileHolder(Config config) {
         String pdfPath = config.getOriginFolder()+ "\\";
-        pdfPath += config.getRecieptsPdfFileName()+ ".pdf";
+        pdfPath += config.getReceiptsPdfFileName()+ ".pdf";
         
         String passwordPath = config.getOriginFolder()+"\\"+config.getNamesAndPasswordsFileName()+".txt"; 
         
@@ -29,8 +29,7 @@ public class FileHolder {
 
     private void PDFLoader(String path){
         try{
-            PDDocument document = PDDocument.load(new File(path));
-            wagesReceipts = document;
+            wagesReceipts = PDDocument.load(new File(path));
         } catch (Exception e) {
             System.out.println("It was not possible to load the wages receipts pdf file. Error: "+e.getMessage()+"\nExiting program.");
 			Runtime.getRuntime().exit(3);
@@ -39,7 +38,7 @@ public class FileHolder {
 
     private void passwordLoader(String path){
         try{
-            List<String> lines = Collections.emptyList();
+            List<String> lines;
             lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
             if(!(lines.isEmpty())) {
             	nifsAndPasswords = lines;
@@ -66,8 +65,9 @@ public class FileHolder {
     public void setNifsAndPasswords(List<String> nifsAndPasswords) {
         this.nifsAndPasswords = nifsAndPasswords;
     }
+
     public void setFilePerPerson(File folder, List<Person> persons) {
-        for (final File fileEntry : folder.listFiles()) {
+        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
             for(Person person : persons){
                 if(person.getName() != null){
                     if(fileEntry.getName().contains(person.getName())) {
