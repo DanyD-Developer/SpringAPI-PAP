@@ -1,7 +1,6 @@
 package com.CMASProject.SplitReceiptsProject.services;
 
 import com.CMASProject.SplitReceiptsProject.AppProperties;
-import com.CMASProject.SplitReceiptsProject.enteties.Config;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;

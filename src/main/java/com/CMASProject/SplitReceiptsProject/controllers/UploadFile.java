@@ -1,8 +1,6 @@
 package com.CMASProject.SplitReceiptsProject.controllers;
 
 import com.CMASProject.SplitReceiptsProject.AppProperties;
-import com.CMASProject.SplitReceiptsProject.enteties.Config;
-import com.CMASProject.SplitReceiptsProject.enteties.FileHolder;
 import com.CMASProject.SplitReceiptsProject.enteties.Person;
 import com.CMASProject.SplitReceiptsProject.services.TicketManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
