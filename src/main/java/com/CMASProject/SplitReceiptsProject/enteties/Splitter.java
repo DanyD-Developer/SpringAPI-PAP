@@ -7,14 +7,16 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Daniel Duarte ( daniel.duarte@cmas-systems.com )
  * @since <next-release>
  */
+@Component
 public class Splitter {
 	
-	public static void splitter(PDDocument document, List<Person> personList){
+	public void split(PDDocument document, List<Person> personList){
     	try {
     		//Create the Documents and the property to read the text
 			PDFTextStripper pdfStripper = new PDFTextStripper();

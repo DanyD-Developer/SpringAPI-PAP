@@ -16,40 +16,13 @@ public class FileHolder {
     private List<String> nifsAndPasswords;
 
 
-    public FileHolder(Config config) {
-        String pdfPath = config.getOriginFolder()+ "\\";
-        pdfPath += config.getReceiptsPdfFileName()+ ".pdf";
-        
-        String passwordPath = config.getOriginFolder()+"\\"+config.getNamesAndPasswordsFileName()+".txt"; 
-        
-        
-        PDFLoader(pdfPath);
-        passwordLoader(passwordPath);
+
+    public FileHolder(File filePDF) {
+        PDFLoader(filePDF);
     }
 
-    private void PDFLoader(String path){
-        try{
-            wagesReceipts = PDDocument.load(new File(path));
-        } catch (Exception e) {
-            System.out.println("It was not possible to load the wages receipts pdf file. Error: "+e.getMessage()+"\nExiting program.");
-			Runtime.getRuntime().exit(3);
-        }
-    }
+    private void PDFLoader(File file){
 
-    private void passwordLoader(String path){
-        try{
-            List<String> lines;
-            lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
-            if(!(lines.isEmpty())) {
-            	nifsAndPasswords = lines;
-            }
-            else {
-            	throw new Exception(" The password file is Empty");
-            }
-        } catch (Exception e) {
-            System.out.println("It was not possible to load the passwords file. Error: "+e.getMessage()+"\nExiting program.");
-			Runtime.getRuntime().exit(4);
-        }
     }
 
     public PDDocument getWagesReceipts() {
@@ -66,17 +39,6 @@ public class FileHolder {
         this.nifsAndPasswords = nifsAndPasswords;
     }
 
-    public void setFilePerPerson(File folder, List<Person> persons) {
-        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-            for(Person person : persons){
-                if(person.getName() != null){
-                    if(fileEntry.getName().contains(person.getName())) {
-                        String path = folder +"\\"+ fileEntry.getName();
-                        FileSystemResource file = new FileSystemResource(path);
-                        person.setFile(file);
-                    }
-                }
-            }
-        }
-    }
+
 }
+

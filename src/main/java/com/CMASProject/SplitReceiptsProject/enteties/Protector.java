@@ -4,16 +4,24 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import com.CMASProject.SplitReceiptsProject.AppProperties;
+import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
+@Component
 public class Protector {
 
-	public static  void protectPdfs(List<Person> personsList, Config config){
+	private final AppProperties appProperties;
+
+	public void protectPdfs(List<Person> personsList){
 		for (Person person : personsList) {
 			if (person.getDocument() != null)
-				protectPersonPdf(person, config.getDestinationFolder());
+				protectPersonPdf(person, appProperties.getTempFolder());
 		}
 	}
 

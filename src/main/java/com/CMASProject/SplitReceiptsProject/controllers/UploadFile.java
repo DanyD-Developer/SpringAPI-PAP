@@ -1,5 +1,6 @@
 package com.CMASProject.SplitReceiptsProject.controllers;
 
+import com.CMASProject.SplitReceiptsProject.AppProperties;
 import com.CMASProject.SplitReceiptsProject.enteties.Config;
 import com.CMASProject.SplitReceiptsProject.enteties.FileHolder;
 import com.CMASProject.SplitReceiptsProject.enteties.Person;
@@ -7,8 +8,10 @@ import com.CMASProject.SplitReceiptsProject.services.TicketManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -18,27 +21,31 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
-@Controller
+@RequiredArgsConstructor
+@Service
 public class UploadFile {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final AppProperties appProperties;
+    private final RestTemplate restTemplate;
 
-    public void fileUpload(List<Person> persons, Config config, FileHolder fileHolder){
+    private final TicketManager ticketManager;
+
+    public void fileUpload(List<Person> persons){
 
         try{
-            TicketManager ticketManager = new TicketManager(this.restTemplate, config);
 
-            NodeIdFinder nodeIdFinder = new NodeIdFinder(this.restTemplate,ticketManager.getTicket(), config.getAlfrescoURL());
+            NodeIdFinder nodeIdFinder = new NodeIdFinder(this.restTemplate,ticketManager.getTicket(), appProperties.getAlfrescoProperties().getUrl());
             nodeIdFinder.assignFoldersID(persons);
 
-            fileHolder.setFilePerPerson(new File(config.getDestinationFolder()), persons);
+            setFilePerPerson(new File(appProperties.getTempFolder()), persons);
 
             for(Person person: persons) {
                 if(person.getNodeID() == null){
                     continue;
                 }
-                String URL = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/alfresco/versions/1/nodes/" + person.getNodeID() + "/children?alf_ticket=" + ticketManager.getTicket();
+                String URL = appProperties.getAlfrescoProperties().getUrl()+"/alfresco/api/-default-/public/alfresco/versions/1/nodes/" + person.getNodeID() + "/children?alf_ticket=" + ticketManager.getTicket();
 
                 //Make the headers be the read by form data
                 HttpHeaders headers = new HttpHeaders();
@@ -82,6 +89,19 @@ public class UploadFile {
             return root.get("error").get("briefSummary").asText();
         } catch (JsonProcessingException e) {
             return JSONmensage;
+        }
+    }
+    public void setFilePerPerson(File folder, List<Person> persons) {
+        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+            for(Person person : persons){
+                if(person.getName() != null){
+                    if(fileEntry.getName().contains(person.getName())) {
+                        String path = folder +"\\"+ fileEntry.getName();
+                        FileSystemResource file = new FileSystemResource(path);
+                        person.setFile(file);
+                    }
+                }
+            }
         }
     }
 }
