@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.CMASProject.SplitReceiptsProject.AppProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
+@Slf4j
 @Component
 public class Protector {
 
@@ -42,9 +44,10 @@ public class Protector {
 			person.getDocument().save(destinationPath + "\\"+fileName);
 			person.getDocument().close();
 			document.close();
-			System.out.println("Created - '"+fileName+"'");
+			log.info("Created - '"+fileName+"'");
 		} catch (IOException e) {
-			System.out.println("It was not possible to protect the pdfs of "+ person.getName()+".\nError: "+e.getMessage());
+			log.error("It was not possible to protect the pdfs of "+ person.getName()+". Error: "+e.getMessage());
+			throw new RuntimeException("It was not possible to protect the pdfs");
 		}
 	}
 }

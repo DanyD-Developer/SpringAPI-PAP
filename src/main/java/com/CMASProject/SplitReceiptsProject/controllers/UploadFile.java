@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class UploadFile {
 
@@ -60,24 +62,21 @@ public class UploadFile {
                 ResponseEntity<String> request = this.restTemplate.postForEntity(URL, requestEntity, String.class);
 
                 if (request.getStatusCode() == HttpStatus.CREATED) {
-                    System.out.println(person.getName() + " - File Upload successfully");
-                } else {
-                    System.out.println("Error: " + request.getBody() + "" + request.getStatusCode().getReasonPhrase());
+                    log.info(person.getName() + " - File Upload to alfresco successfully");
                 }
+
             }
             ticketManager.closeTicket();
         }
         catch (HttpClientErrorException e4){
-            System.out.println("It was not possible to send files to Alfresco.");
-            System.out.println("Error: "+e4.getStatusCode().value()+ " "+e4.getStatusText() +" - "+ makeErrorMessage(e4.getResponseBodyAsString()));
-            System.out.println("Exiting Program.");
-            System.exit(22);
+            log.info("It was not possible to send files to Alfresco.");
+            log.error("Error " +e4.getStatusCode().value()+ " "+e4.getStatusText() +" - "+ makeErrorMessage(e4.getResponseBodyAsString()));
+            throw new RuntimeException(makeErrorMessage(e4.getResponseBodyAsString()));
         }
         catch (ResourceAccessException e5){
-            System.out.println("It was not possible to send files to Alfresco.");
-            System.out.println("Error: "+ e5.getMessage());
-            System.out.println("Exiting Program.");
-            System.exit(23);
+            log.info("It was not possible to send files to Alfresco.");
+            log.error("Error " +e5);
+            throw new RuntimeException("Connection Time out");
         }
     }
 

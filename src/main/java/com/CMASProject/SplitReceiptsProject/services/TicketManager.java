@@ -2,12 +2,14 @@ package com.CMASProject.SplitReceiptsProject.services;
 
 import com.CMASProject.SplitReceiptsProject.AppProperties;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import static java.lang.String.format;
 
+@Slf4j
 @Service
 public class TicketManager {
     private final AppProperties appProperties;
@@ -38,17 +40,13 @@ public class TicketManager {
             }
             this.ticket = response.get("entry").get("id").asText();
         } catch (ResourceAccessException e) {
-            System.out.println("It was not possible to send files to Alfresco.");
-            System.out.println("Connection Time out");
-            System.out.println("Make sure you typed the URL correctly or if you have internet connection");
-            System.out.println("Exiting Program.");
-            System.exit(24);
+            log.info("It was not possible to send files to Alfresco.");
+            log.error("Connection Time out"+e);
+            log.info("Make sure you typed the URL correctly or if you have internet connection");
+            throw new RuntimeException("Connection Time out");
         } catch (IllegalArgumentException e) {
-            System.out.println("It was not possible to send files to Alfresco.");
-            System.out.println("Error: " + e.getMessage());
-            System.out.println("Make sure you typed the URL correctly");
-            System.out.println("Exiting Program.");
-            System.exit(25);
+            log.info("It was not possible to send files to Alfresco.");
+            log.error("Error: " + e.getMessage());
         }
 
     }

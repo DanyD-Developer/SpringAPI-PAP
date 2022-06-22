@@ -3,6 +3,7 @@ package com.CMASProject.SplitReceiptsProject.enteties;
 import java.io.IOException;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
  * @author Daniel Duarte ( daniel.duarte@cmas-systems.com )
  * @since <next-release>
  */
+
+@Slf4j
 @Component
 public class Splitter {
 	
@@ -57,8 +60,8 @@ public class Splitter {
 			}
 			splitVerification(personList);
 		} catch (IOException e) {
-			System.out.println("It was not possible to split the pdf.\nError: "+e.getMessage()+"\nExiting program.");
-			Runtime.getRuntime().exit(5);
+			log.error("It was not possible to split the pdf. Error: "+e.getMessage());
+			throw  new RuntimeException("It was not possible to split the pdf");
 		}
 	}
 
@@ -72,8 +75,8 @@ public class Splitter {
 		}
 
 		if(f == personsList.size()) {
-			System.out.println("It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file");
-			Runtime.getRuntime().exit(1);
+			log.error("It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file");
+			throw new RuntimeException("It was not performed any split");
 		}
 	}
 }

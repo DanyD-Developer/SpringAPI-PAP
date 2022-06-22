@@ -2,6 +2,7 @@ package com.CMASProject.SplitReceiptsProject.controllers;
 
 import com.CMASProject.SplitReceiptsProject.enteties.Person;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 
+@Slf4j
 @Controller
 public class NodeIdFinder {
     //This is the ID of the folder where all the oder folders are contained
@@ -55,11 +57,13 @@ public class NodeIdFinder {
                     person.setNodeID(personWgFolderID);
                 }
                 else{
-                    System.out.println("Person '"+name+"' does not have a WR folder!");
+                    log.error("Person '"+name+"' does not have a WR folder!");
+                    throw new RuntimeException("Person '"+name+"' does not have a WR folder!");
                 }
             }
             else{
-                System.out.println("Could not find folder of '"+name+"' in alfresco! Make sure that the folder in alfresco have same name has the person ('"+name+"').");
+                log.error("Could not find folder of '"+name+"' in alfresco! Make sure that the folder in alfresco have same name has the person ('"+name+"').");
+                throw new RuntimeException("Could not find folder of '"+name+"' in alfresco!");
             }
         }
     }

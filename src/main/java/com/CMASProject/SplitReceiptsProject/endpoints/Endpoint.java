@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +21,8 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/upload")
 @Slf4j
+@RequestMapping("/upload")
 public class Endpoint {
 
     private final AppProperties appProperties;
@@ -55,15 +56,13 @@ public class Endpoint {
 
             uploadFile.fileUpload(personsList);
 
-
-
         } catch (Exception e) {
             log.error("Failed Loading file {}", multipartFilePDF.getOriginalFilename(), e);
             throw new RuntimeException("Failed Loading file");
         }
+
         DeleteFiles(new File(appProperties.getTempFolder()));
 
-        //return ResponseEntity.ok().body("Upload Successfully");
     }
 
     private File createTemporaryFiles(MultipartFile multipartFilePDF) {
@@ -76,7 +75,8 @@ public class Endpoint {
             multipartFilePDF.transferTo(temporaryFilePDF);
             return temporaryFilePDF;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("It was not possible write the multipart file in a file");
+            throw new RuntimeException("It was not possible write the multipart file in a file");
         }
     }
     public static void DeleteFiles(File folder) {
@@ -84,7 +84,11 @@ public class Endpoint {
             String path = folder +"\\"+ fileEntry.getName();
             File file = new File(path);
             if(file.delete()){
-                System.out.println("Delete "+fileEntry.getName());
+                log.info("Delete "+fileEntry.getName());
+            }
+            else{
+                log.error("It Was not possible Delete the files");
+                throw new RuntimeException("It Was not possible Delete the files");
             }
         }
     }
