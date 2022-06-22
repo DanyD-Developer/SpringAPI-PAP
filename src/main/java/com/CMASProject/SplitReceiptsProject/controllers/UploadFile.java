@@ -33,7 +33,7 @@ public class UploadFile {
     public void fileUpload(List<Person> persons){
 
         try{
-
+            ticketManager.requestTicket();
             NodeIdFinder nodeIdFinder = new NodeIdFinder(this.restTemplate,ticketManager.getTicket(), appProperties.getAlfrescoProperties().getUrl());
             nodeIdFinder.assignFoldersID(persons);
 

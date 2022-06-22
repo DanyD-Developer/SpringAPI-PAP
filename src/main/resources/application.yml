@@ -6,4 +6,4 @@ app:
     url: https://alfresco-nowo.cmas-systems.com
     username: config
     password: nowo123
-  temp-folder: "TemporaryFolder"
+  temp-folder: "C:\\Users\\Daniel Duarte\\Desktop\\Ecrypted\\OutPut"

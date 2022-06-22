@@ -27,10 +27,9 @@ public class TicketManager {
 
         URL = pathDefault.getUrl() + "/alfresco/api/-default-/public/authentication/versions/1/tickets";
         credentials = "{\"userId\":\"" + pathDefault.getUsername() + "\",\"password\":\"" + pathDefault.getPassword() + "\"}";
-        requestTicket();
     }
 
-    private void requestTicket() {
+    public void requestTicket() {
         try {
             JsonNode response = this.restTemplate.postForObject(URL, credentials, JsonNode.class);
             if (response == null) {

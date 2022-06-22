@@ -15,6 +15,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -54,24 +55,18 @@ public class Endpoint {
 
             uploadFile.fileUpload(personsList);
 
+
+
         } catch (Exception e) {
             log.error("Failed Loading file {}", multipartFilePDF.getOriginalFilename(), e);
             throw new RuntimeException("Failed Loading file");
         }
+        DeleteFiles(new File(appProperties.getTempFolder()));
 
         //return ResponseEntity.ok().body("Upload Successfully");
     }
 
     private File createTemporaryFiles(MultipartFile multipartFilePDF) {
-        //Create a TemporaryFilePDF
-        File folder = new File(appProperties.getTempFolder());
-        System.out.println(folder.getPath());
-        if(!folder.exists()){
-            if(!folder.mkdir()){
-                System.out.println("Erro");
-            }
-        }
-
         File temporaryFilePDF = new File(appProperties.getTempFolder() + "\\" + multipartFilePDF.getOriginalFilename());
 
         try (OutputStream os = Files.newOutputStream(temporaryFilePDF.toPath())) {
@@ -82,6 +77,15 @@ public class Endpoint {
             return temporaryFilePDF;
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    public static void DeleteFiles(File folder) {
+        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+            String path = folder +"\\"+ fileEntry.getName();
+            File file = new File(path);
+            if(file.delete()){
+                System.out.println("Delete "+fileEntry.getName());
+            }
         }
     }
 }
