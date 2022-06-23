@@ -29,7 +29,7 @@ public class WageReceiptFileUploader {
 
 	private final AlfrescoNodeIdFinder nodeIdFinder;
 
-	public void fileUpload( List<Person> persons ) {
+	public void fileUpload( List<Person> persons, String randomName ) {
 
 		String ticket = alfrescoClient.requestTicket();
 
@@ -38,14 +38,14 @@ public class WageReceiptFileUploader {
 			nodeIdFinder.assignFoldersID( ticket, persons );
 
 			//Read the temporary folder and set the files by Person
-			setFilePerPerson( new File( appProperties.getTempFolder() ), persons );
+			setFilePathPerPerson( new File( appProperties.getTempFolder() + "\\" + randomName ), persons );
 
 			for ( Person person : persons ) {
 				if ( person.getNodeID() == null ) {
 					continue;
 				}
 
-				boolean isSucceeded = alfrescoClient.uploadFile( ticket, person.getNodeID(), person.getFile() );
+				boolean isSucceeded = alfrescoClient.uploadFile( ticket, person.getNodeID(),new FileSystemResource(person.getFilePath()));
 
 				if ( isSucceeded ) {
 					log.info( person.getName() + " - File Upload to alfresco successfully" );
@@ -54,11 +54,14 @@ public class WageReceiptFileUploader {
 			}
 
 		}
+		/*
 		catch ( HttpClientErrorException e4 ) {
 			log.info( "It was not possible to send files to Alfresco." );
 			log.error( "Error " + e4.getStatusCode().value() + " " + e4.getStatusText() + " - " + makeErrorMessage( e4.getResponseBodyAsString() ) );
 			throw new RuntimeException( makeErrorMessage( e4.getResponseBodyAsString() ) );
 		}
+		*/
+
 		catch ( ResourceAccessException e5 ) {
 			log.info( "It was not possible to send files to Alfresco." );
 			log.error( "Error " + e5 );
@@ -79,14 +82,13 @@ public class WageReceiptFileUploader {
 		}
 	}
 
-	public void setFilePerPerson( File folder, List<Person> persons ) {
+	public void setFilePathPerPerson(File folder, List<Person> persons ) {
 		for ( final File fileEntry : Objects.requireNonNull( folder.listFiles() ) ) {
 			for ( Person person : persons ) {
 				if ( person.getName() != null ) {
 					if ( fileEntry.getName().contains( person.getName() ) ) {
 						String path = folder + "\\" + fileEntry.getName();
-						FileSystemResource file = new FileSystemResource( path );
-						person.setFile( file );
+						person.setFilePath(path);
 					}
 				}
 			}

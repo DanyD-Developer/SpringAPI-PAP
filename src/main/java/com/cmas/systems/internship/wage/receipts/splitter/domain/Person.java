@@ -19,7 +19,7 @@ public class Person {
 
 	private PDDocument document = null;
 
-	private FileSystemResource file;
+	private String filePath;
 
 	public Person( Integer nif, String password ) {
 		this.nif = nif;

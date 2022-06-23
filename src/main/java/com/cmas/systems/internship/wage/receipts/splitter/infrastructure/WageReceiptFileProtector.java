@@ -20,10 +20,10 @@ public class WageReceiptFileProtector {
 
 	private final WageReceiptFileSplitterProperties appProperties;
 
-	public void protectPdfs(List<Person> personsList){
+	public void protectPdfs(List<Person> personsList, String randomName){
 		for (Person person : personsList) {
 			if (person.getDocument() != null)
-				protectPersonPdf(person, appProperties.getTempFolder());
+				protectPersonPdf(person, appProperties.getTempFolder() + "\\" +randomName);
 		}
 	}
 

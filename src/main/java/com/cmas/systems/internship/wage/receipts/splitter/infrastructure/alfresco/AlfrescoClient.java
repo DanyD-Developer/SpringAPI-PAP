@@ -57,7 +57,7 @@ public class AlfrescoClient {
 
 	public Map<String, String> getNodeChildren( String ticket, String nodeID ) {
 
-		String url = format( "%s/%s/children?alf_ticket=%s", alfrescoProperties.getUrl(), nodeID, ticket );
+		String url = format( "%s/alfresco/api/-default-/public/alfresco/versions/1/nodes/%s/children?alf_ticket=%s", alfrescoProperties.getUrl(), nodeID, ticket );
 
 		JsonNode jsonNode = restTemplate.getForObject( url, JsonNode.class );
 		JsonNode entries = jsonNode.get( "list" ).get( "entries" );

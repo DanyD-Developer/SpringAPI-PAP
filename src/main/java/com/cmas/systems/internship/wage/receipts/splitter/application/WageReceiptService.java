@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
@@ -63,26 +65,42 @@ public class WageReceiptService {
 			throw new RuntimeException( "Error trying to get the body file(s)" );
 		}
 
+		String randomName = UUID.randomUUID().toString();
+
 		//Create the Temporary files
-		File file = createTemporaryFiles( wageReceiptPdf );
+		File file = createTemporaryFiles( wageReceiptPdf, randomName );
 
 		try ( PDDocument wagesReceipts = PDDocument.load( file ) ) {
 			//Create a list of each person (each person is created according to the NIF in the passwords file)
 			List<Person> personsList = passwordsMap
 				.entrySet()
 				.stream()
-				.map( entry -> new Person( Integer.parseInt( entry.getKey() ), entry.getValue() ) )
+				.map( entry -> {
+					if(entry.getValue() == "" || entry.getKey() == "" || entry.getKey().length() != 9){
+						throw new RuntimeException("Incorrect password(s)/nif(s) format");
+					}
+					return new Person( Integer.parseInt( entry.getKey() ) , entry.getValue() );
+
+				})
 				.collect( Collectors.toList() );
 
 			//Splits the pdfs and Checks if it was done any split
 			receiptFileSplitter.split( wagesReceipts, personsList );
 
 			//Encrypt the pdf file with the respective person's password
-			receiptFileProtector.protectPdfs( personsList );
+			receiptFileProtector.protectPdfs( personsList, randomName );
 
 			//Upload the files to alfresco
-			fileUploader.fileUpload( personsList );
+			fileUploader.fileUpload( personsList, randomName );
 
+		}
+		catch (NumberFormatException e){
+			log.error("Failed to read NIF(s)");
+			throw new RuntimeException("Failed to read NIF(s)");
+		}
+		catch (IOException e){
+			log.error("File isn't a valid pdf file");
+			throw new RuntimeException("File isn't a valid pdf file");
 		}
 		catch ( Exception e ) {
 			log.error( "Failed Loading file {}", wageReceiptPdf.getOriginalFilename(), e );
@@ -90,12 +108,15 @@ public class WageReceiptService {
 		}
 		finally {
 			//Delete the Temporary Files
-			deleteTemporaryFiles();
+			deleteTemporaryFiles( randomName );
 		}
 	}
 
-	private File createTemporaryFiles( MultipartFile multipartFilePDF ) {
-		File temporaryFilePDF = new File( appProperties.getTempFolder() + "\\" + multipartFilePDF.getOriginalFilename() );
+	private File createTemporaryFiles( MultipartFile multipartFilePDF, String randomName ) {
+		File randomFolder = new File(appProperties.getTempFolder() + "\\" + randomName);
+		randomFolder.mkdir();
+
+		File temporaryFilePDF = new File( randomFolder + "\\" + multipartFilePDF.getOriginalFilename() );
 
 		try ( OutputStream os = Files.newOutputStream( temporaryFilePDF.toPath() ) ) {
 			//Write PDF document
@@ -109,18 +130,19 @@ public class WageReceiptService {
 		}
 	}
 
-	public void deleteTemporaryFiles() {
-		File folder = new File( appProperties.getTempFolder() );
+	public void deleteTemporaryFiles(String randomName) {
+
+		File folder = new File( appProperties.getTempFolder() + "\\" + randomName );
 		for ( final File fileEntry : Objects.requireNonNull( folder.listFiles() ) ) {
-			String path = folder + "\\" + fileEntry.getName();
-			File file = new File( path );
-			if ( nonNull( file ) && file.delete() ) {
-				log.info( "Delete " + fileEntry.getName() );
+			try{
+				FileUtils.deleteDirectory(folder);
 			}
-			else {
+			catch (IOException e){
 				log.error( "It Was not possible Delete the files." );
 				throw new RuntimeException( "It Was not possible Delete the files." );
 			}
+
+			log.info( "Delete " + fileEntry.getName() );
 		}
 	}
 }
