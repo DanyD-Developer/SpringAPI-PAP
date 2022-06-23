@@ -76,7 +76,7 @@ public class Splitter {
 
 		if(f == personsList.size()) {
 			log.error("It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file");
-			throw new RuntimeException("It was not performed any split");
+			throw new RuntimeException("It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file");
 		}
 	}
 }

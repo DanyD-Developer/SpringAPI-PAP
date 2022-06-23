@@ -35,7 +35,7 @@ public class TicketManager {
         try {
             JsonNode response = this.restTemplate.postForObject(URL, credentials, JsonNode.class);
             if (response == null) {
-                System.out.println("Algo deu errado!");
+                log.error("Something went Wrong!");
                 return;
             }
             this.ticket = response.get("entry").get("id").asText();
@@ -52,9 +52,7 @@ public class TicketManager {
     }
 
     public void closeTicket() {
-        //System.out.println(url);
         restTemplate.delete(format("%s/-me-?alf_ticket=%s", URL, ticket));
-        //System.out.println(response.toString());
     }
 
     public String getTicket() {

@@ -36,9 +36,11 @@ public class UploadFile {
 
         try{
             ticketManager.requestTicket();
+
             NodeIdFinder nodeIdFinder = new NodeIdFinder(this.restTemplate,ticketManager.getTicket(), appProperties.getAlfrescoProperties().getUrl());
             nodeIdFinder.assignFoldersID(persons);
 
+            //Read the temporary folder and set the files by Person
             setFilePerPerson(new File(appProperties.getTempFolder()), persons);
 
             for(Person person: persons) {
