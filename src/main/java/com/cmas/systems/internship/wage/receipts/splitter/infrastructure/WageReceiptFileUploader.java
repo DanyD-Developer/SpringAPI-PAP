@@ -54,14 +54,11 @@ public class WageReceiptFileUploader {
 			}
 
 		}
-		/*
 		catch ( HttpClientErrorException e4 ) {
 			log.info( "It was not possible to send files to Alfresco." );
 			log.error( "Error " + e4.getStatusCode().value() + " " + e4.getStatusText() + " - " + makeErrorMessage( e4.getResponseBodyAsString() ) );
 			throw new RuntimeException( makeErrorMessage( e4.getResponseBodyAsString() ) );
 		}
-		*/
-
 		catch ( ResourceAccessException e5 ) {
 			log.info( "It was not possible to send files to Alfresco." );
 			log.error( "Error " + e5 );
