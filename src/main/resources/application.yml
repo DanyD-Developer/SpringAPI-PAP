@@ -1,9 +1,13 @@
-#logging.level.org.springframework=OFF
-#logging.level.root=OFF
-#spring.main.banner-mode=off
-app:
+server:
+  port: 8964
+
+wage-receipt-file-splitter:
   alfresco-properties:
     url: https://alfresco-nowo.cmas-systems.com
     username: config
     password: nowo123
   temp-folder: "C:\\Users\\Daniel Duarte\\Desktop\\Ecrypted\\OutPut"
+
+logging:
+  level:
+    com.cmas.systems.internship.receipts.splitter: debug
