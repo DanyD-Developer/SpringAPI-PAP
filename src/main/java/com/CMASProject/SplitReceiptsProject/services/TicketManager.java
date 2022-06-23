@@ -13,8 +13,8 @@ import static java.lang.String.format;
 @Service
 public class TicketManager {
     private final AppProperties appProperties;
-    private String URL;        // = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/authentication/versions/1/tickets";
-    private String credentials; // = "{\"userId\":\"config\",\"password\":\"nowo123\"}";
+    private final String URL;        // = "https://alfresco-nowo.cmas-systems.com/alfresco/api/-default-/public/authentication/versions/1/tickets";
+    private final String credentials; // = "{\"userId\":\"config\",\"password\":\"nowo123\"}";
 
     private String ticket;
 
@@ -25,10 +25,8 @@ public class TicketManager {
         this.appProperties = appProperties;
         this.restTemplate = restTemplate;
 
-        AppProperties.AlfrescoProperties pathDefault = appProperties.getAlfrescoProperties();
-
-        URL = pathDefault.getUrl() + "/alfresco/api/-default-/public/authentication/versions/1/tickets";
-        credentials = "{\"userId\":\"" + pathDefault.getUsername() + "\",\"password\":\"" + pathDefault.getPassword() + "\"}";
+        URL = this.appProperties.getAlfrescoProperties().getUrl() + "/alfresco/api/-default-/public/authentication/versions/1/tickets";
+        credentials = "{\"userId\":\"" + this.appProperties.getAlfrescoProperties().getUsername() + "\",\"password\":\"" + this.appProperties.getAlfrescoProperties().getPassword() + "\"}";
     }
 
     public void requestTicket() {

@@ -5,8 +5,8 @@ import org.springframework.core.io.FileSystemResource;
 
 public class Person {
     private String name;
-    private Integer nif;
-    private String password;
+    private final Integer nif;
+    private final String password;
     private String processDate;
     private String NodeID;
 
@@ -80,15 +80,9 @@ public class Person {
     public Integer getNif() {
         return nif;
     }
-    public void setNif(Integer nif) {
-        this.nif = nif;
-    }
 
     public String getPassword() {
         return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public PDDocument getDocument() {

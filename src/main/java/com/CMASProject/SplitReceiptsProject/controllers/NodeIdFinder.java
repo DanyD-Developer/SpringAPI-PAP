@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
-import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class NodeIdFinder {
     public NodeIdFinder(RestTemplate restTemplate, String ticket, String url) {
         this.restTemplate = restTemplate;
         this.ticket = ticket;
-        this.URL = url + "/alfresco/api/-default-/public/alfresco/versions/1/nodes";
+        URL = url + "/alfresco/api/-default-/public/alfresco/versions/1/nodes";
     }
 
     public NodeIdFinder() {
@@ -49,8 +48,6 @@ public class NodeIdFinder {
         for(Person person : list){
             String name = person.getName();
             if(name == null){ continue; }
-//            name = name.replace(" ",".").toLowerCase();
-//            name = specialCharacterRemoval(name);
             if(map.containsKey(name)){
                 String personWgFolderID = getSubFoldersIDs(map.get(name)).getOrDefault("WR",null);
                 if(personWgFolderID != null){
@@ -83,9 +80,5 @@ public class NodeIdFinder {
         }
 
         return  map;
-    }
-
-    public static String specialCharacterRemoval(String str) {
-        return Normalizer.normalize(str, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
 }

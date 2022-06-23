@@ -3,14 +3,12 @@ package com.CMASProject.SplitReceiptsProject.endpoints;
 import com.CMASProject.SplitReceiptsProject.AppProperties;
 import com.CMASProject.SplitReceiptsProject.controllers.UploadFile;
 import com.CMASProject.SplitReceiptsProject.enteties.*;
-import com.CMASProject.SplitReceiptsProject.services.TicketManager;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +28,6 @@ public class Endpoint {
 
     private final AppProperties appProperties;
 
-    private final TicketManager ticketManager;
     private final UploadFile uploadFile;
     private final Protector protector;
     private final Splitter splitter;
@@ -40,7 +37,7 @@ public class Endpoint {
     @PostMapping
     public ResponseEntity<String> getRequest(@RequestParam("filedata") MultipartFile multipartFilePDF, @RequestParam("file") MultipartFile multipartFileText) throws IOException {
 
-        Map<String, String> passwordsMap = null;
+        Map<String, String> passwordsMap;
         try{
             //Read the Json file of the passwords and save inside a Map
             passwordsMap = objectMapper.readValue(new String(multipartFileText.getBytes()), Map.class);
