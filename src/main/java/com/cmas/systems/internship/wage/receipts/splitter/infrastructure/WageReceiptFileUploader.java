@@ -31,7 +31,7 @@ public class WageReceiptFileUploader {
 
 	public void fileUpload( List<Person> persons, String randomName ) {
 
-		String ticket = alfrescoClient.requestTicket();
+		String ticket= alfrescoClient.requestTicket(); ;
 
 		try {
 
@@ -54,11 +54,6 @@ public class WageReceiptFileUploader {
 			}
 
 		}
-		catch ( HttpClientErrorException e4 ) {
-			log.info( "It was not possible to send files to Alfresco." );
-			log.error( "Error " + e4.getStatusCode().value() + " " + e4.getStatusText() + " - " + makeErrorMessage( e4.getResponseBodyAsString() ) );
-			throw new RuntimeException( makeErrorMessage( e4.getResponseBodyAsString() ) );
-		}
 		catch ( ResourceAccessException e5 ) {
 			log.info( "It was not possible to send files to Alfresco." );
 			log.error( "Error " + e5 );
@@ -66,16 +61,6 @@ public class WageReceiptFileUploader {
 		}
 		finally {
 			alfrescoClient.closeTicket( ticket );
-		}
-	}
-
-	private static String makeErrorMessage( String JSONmensage ) {
-		try {
-			JsonNode root = new ObjectMapper().readTree( JSONmensage );
-			return root.get( "error" ).get( "briefSummary" ).asText();
-		}
-		catch ( JsonProcessingException e ) {
-			return JSONmensage;
 		}
 	}
 
