@@ -1,6 +1,7 @@
 package com.cmas.systems.internship.wage.receipts.splitter.infrastructure;
 
 import com.cmas.systems.internship.wage.receipts.splitter.WageReceiptFileSplitterProperties;
+import com.cmas.systems.internship.wage.receipts.splitter.domain.WageReceiptOwner;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.alfresco.AlfrescoClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,14 +20,14 @@ public class WageReceiptFileUploader {
 
 	private final AlfrescoClient alfrescoClient;
 
-	public void fileUpload( ByteArrayOutputStream byteArrayOutputStream, String personName ) {
+	public void fileUpload(ByteArrayOutputStream byteArrayOutputStream, String personName, String data) {
 
 		String ticket = alfrescoClient.requestTicket();
 
 		try {
 			String nodeId = assignFoldersID( ticket, personName );
 
-			boolean isSucceeded = alfrescoClient.uploadFile( ticket, nodeId, new FileNameAwareByteArrayResource( "rv_" + personName + "_teste.pdf", byteArrayOutputStream.toByteArray() ) );
+			boolean isSucceeded = alfrescoClient.uploadFile( ticket, nodeId, new FileNameAwareByteArrayResource( "RV_"+ data +" - "+ personName + ".pdf", byteArrayOutputStream.toByteArray() ) );
 
 			if ( isSucceeded ) {
 				log.info( personName + " - File Upload to alfresco successfully" );
