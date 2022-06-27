@@ -13,6 +13,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
@@ -39,32 +40,13 @@ public class WageReceiptService {
 
 	@SneakyThrows
 	public void processFile( MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
-		Map<String, String> passwordsMap;
-
-		try {
-			//Read the Json file of the passwords and save inside a Map
-			passwordsMap = objectMapper.readValue( new String( pwdFile.getBytes() ), Map.class );
-		}
-		catch ( JsonParseException e ) {
-			log.error( "Error trying to read JSON file verify if you put the correct file " + e.getMessage() );
-			throw new RuntimeException( "Error trying to read JSON file" );
-		}
-		catch ( MismatchedInputException e ) {
-			log.error( "Error {}", e.getMessage() + " Make sure you didn't forget to put a file(s) on the body or if he file is not empty" );
-			throw new RuntimeException( "Error trying to get/read the body file(s)" );
-		}
+		Map<String, String> passwordsMap = getPasswordsMap( pwdFile );
 
 		//Create a list of each person (each person is created according to the NIF in the passwords file)
 		Map<Integer, WageReceiptOwner> personMap = passwordsMap
 			.entrySet()
 			.stream()
-			.map( entry -> {
-				if ( entry.getValue() == "" || entry.getKey() == "" || entry.getKey().length() != 9 ) {
-					throw new RuntimeException( "Incorrect password(s)/nif(s) format" );
-				}
-				return new WageReceiptOwner( Integer.parseInt( entry.getKey() ), entry.getValue() );
-
-			} )
+			.map( entry -> new WageReceiptOwner( Integer.parseInt( entry.getKey() ), entry.getValue() ) )
 			.collect( Collectors.toMap( WageReceiptOwner::getNif, Function.identity() ) );
 
 		try ( PDDocument wagesReceipts = PDDocument.load( wageReceiptPdf.getBytes() ) ) {
@@ -94,6 +76,34 @@ public class WageReceiptService {
 			log.error( "Failed Loading file {}", wageReceiptPdf.getOriginalFilename(), e );
 			throw new RuntimeException( "Failed Loading file" );
 		}
+	}
+
+	private Map<String, String> getPasswordsMap( MultipartFile pwdFile ) throws IOException {
+		Map<String, String> passwordsMap;
+
+		try {
+			//Read the Json file of the passwords and save inside a Map
+			passwordsMap = objectMapper.readValue( new String( pwdFile.getBytes() ), Map.class );
+
+			boolean anyMatch = passwordsMap.entrySet().stream().anyMatch( entry ->
+				ObjectUtils.isEmpty( entry.getValue() ) ||
+					ObjectUtils.isEmpty( entry.getKey() ) ||
+					entry.getKey().length() != 9 );
+
+			if ( anyMatch ) {
+				throw new RuntimeException( "Incorrect password(s)/nif(s) format" );
+			}
+
+		}
+		catch ( JsonParseException e ) {
+			log.error( "Error trying to read JSON file verify if you put the correct file " + e.getMessage() );
+			throw new RuntimeException( "Error trying to read JSON file" );
+		}
+		catch ( MismatchedInputException e ) {
+			log.error( "Error {}", e.getMessage() + " Make sure you didn't forget to put a file(s) on the body or if he file is not empty" );
+			throw new RuntimeException( "Error trying to get/read the body file(s)" );
+		}
+		return passwordsMap;
 	}
 
 	public ByteArrayOutputStream protectFile( ByteArrayOutputStream document, Integer owner, String password ) {
