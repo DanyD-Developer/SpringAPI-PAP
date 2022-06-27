@@ -23,15 +23,22 @@ public class WageReceiptFileUploader {
 
 	private final AlfrescoClient alfrescoClient;
 
+	private final WageReceiptFileProtector receiptFileProtector;
+
 	public void fileUpload( List<Person> persons, String randomName ) {
 
 		String ticket= alfrescoClient.requestTicket(); ;
 
 		try {
-			//Read the temporary folder and set the files by Person
-			setFilePathPerPerson( new File( appProperties.getTempFolder() + "\\" + randomName ), persons );
-
 			for ( Person person : persons ) {
+
+				//Encrypt the pdf file with the respective person's password
+				receiptFileProtector.protectPersonPdf(person,randomName);
+
+				//Read the temporary folder and set the files by Person
+				setFilePathPerPerson( new File( appProperties.getTempFolder() + "\\" + randomName ), person );
+
+				//Set nodeID for person
 				assignFoldersID(ticket,person);
 
 				if ( person.getNodeID() == null ) {
@@ -57,14 +64,12 @@ public class WageReceiptFileUploader {
 		}
 	}
 
-	public void setFilePathPerPerson(File folder, List<Person> persons ) {
+	public void setFilePathPerPerson(File folder, Person person) {
 		for ( final File fileEntry : Objects.requireNonNull( folder.listFiles() ) ) {
-			for ( Person person : persons ) {
-				if ( person.getName() != null ) {
-					if ( fileEntry.getName().contains( person.getName() ) ) {
-						String path = folder + "\\" + fileEntry.getName();
-						person.setFilePath(path);
-					}
+			if ( person.getName() != null ) {
+				if ( fileEntry.getName().contains( person.getName() ) ) {
+					String path = folder + "\\" + fileEntry.getName();
+					person.setFilePath(path);
 				}
 			}
 		}

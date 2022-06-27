@@ -87,9 +87,6 @@ public class WageReceiptService {
 			//Splits the pdfs and Checks if it was done any split
 			receiptFileSplitter.split( wagesReceipts, personsList );
 
-			//Encrypt the pdf file with the respective person's password
-			receiptFileProtector.protectPdfs( personsList, randomName );
-
 			//Upload the files to alfresco
 			fileUploader.fileUpload( personsList, randomName );
 
