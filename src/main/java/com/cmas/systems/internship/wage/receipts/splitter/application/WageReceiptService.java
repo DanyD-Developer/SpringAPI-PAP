@@ -69,24 +69,24 @@ public class WageReceiptService {
 			//Splits the pdfs and Checks if it was done any split
 			Map<Integer, ByteArrayOutputStream> split = receiptFileSplitter.split( wagesReceipts, personMap.values() );
 
-			//Key:NIF | Value: document  (every owner here has a document)
-			split.forEach( ( key, value ) -> {
-				String ownerName = personMap.get( key ).getName();
+			
+			split.forEach( ( nif, value ) -> {
+				WageReceiptOwner owner = personMap.get(nif);
 				try {
 					//Encrypt the pdf file with the respective person's password
-					ByteArrayOutputStream arrayOutputStream = protectFile( value, key, passwordsMap.get( String.valueOf( key ) ) );
+					ByteArrayOutputStream arrayOutputStream = protectFile( value, nif, passwordsMap.get( String.valueOf( nif ) ) );
 					//Upload the files to alfresco
-					fileUploader.fileUpload( arrayOutputStream, ownerName );
+					fileUploader.fileUpload( arrayOutputStream, owner.getName(), owner.getProcessDate() );
 
 				}catch (ProtectorException | UploadException e){
 					if(hasErrors.get()){
 						message.set(message.get() + ",");
 					}
 					hasErrors.set(true);
-					message.set(message.get()+"\""+ ownerName +"\""+":{\"status\":\"" + e.getMessage() + "\"}");
+					message.set(message.get()+"\""+ owner.getName() +"\""+":{\"status\":\"" + e.getMessage() + "\"}");
 					return;
 				}
-				message.set(message.get()+"\""+ ownerName +"\""+":{\"status\":\"Upload Successful!\"}");
+				message.set(message.get()+"\""+ owner.getName() +"\""+":{\"status\":\"Upload Successful!\"}");
 			} );
 		}catch (SplitterException | PasswordsException e){
 			hasErrors.set(true);
