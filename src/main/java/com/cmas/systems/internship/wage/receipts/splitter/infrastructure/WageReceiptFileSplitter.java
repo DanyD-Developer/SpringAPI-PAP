@@ -77,13 +77,7 @@ public class WageReceiptFileSplitter {
 			}
 
 			return documents.entrySet().stream().collect( Collectors.toMap(
-				new Function<Map.Entry<Integer, PDDocument>, Integer>() {
-
-					@Override
-					public Integer apply( Map.Entry<Integer, PDDocument> integerPDDocumentEntry ) {
-						return integerPDDocumentEntry.getKey();
-					}
-				},
+					integerPDDocumentEntry -> integerPDDocumentEntry.getKey(),
 				new Function<Map.Entry<Integer, PDDocument>, ByteArrayOutputStream>() {
 
 					@SneakyThrows
