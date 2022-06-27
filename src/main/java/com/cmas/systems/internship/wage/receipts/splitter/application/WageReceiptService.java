@@ -47,19 +47,20 @@ public class WageReceiptService {
 			.entrySet()
 			.stream()
 			.map( entry -> new WageReceiptOwner( Integer.parseInt( entry.getKey() ), entry.getValue() ) )
-			.collect( Collectors.toMap( WageReceiptOwner::getNif, Function.identity() ) );
+			.collect( Collectors.toMap( WageReceiptOwner::getNif, Function.identity()) );
 
 		try ( PDDocument wagesReceipts = PDDocument.load( wageReceiptPdf.getBytes() ) ) {
 
 			//Splits the pdfs and Checks if it was done any split
 			Map<Integer, ByteArrayOutputStream> split = receiptFileSplitter.split( wagesReceipts, personMap.values() );
 
-			split.forEach( ( key, value ) -> {
+			split.forEach( ( nif, value ) -> {
 
+				WageReceiptOwner owner = personMap.get(nif);
 				//Encrypt the pdf file with the respective person's password
-				ByteArrayOutputStream arrayOutputStream = protectFile( value, key, passwordsMap.get( String.valueOf( key ) ) );
+				ByteArrayOutputStream arrayOutputStream = protectFile( value, nif, passwordsMap.get( String.valueOf( nif ) ) );
 				//Upload the files to alfresco
-				fileUploader.fileUpload( arrayOutputStream, personMap.get( key ).getName(), personMap.get( key ).getProcessDate() );
+				fileUploader.fileUpload( arrayOutputStream, owner.getName(), owner.getProcessDate() );
 
 			} );
 
