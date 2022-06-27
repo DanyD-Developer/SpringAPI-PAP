@@ -95,8 +95,8 @@ public class AlfrescoClient {
 		}
 		catch ( HttpClientErrorException e4 ) {
 			log.info( "It was not possible to send files to Alfresco." );
-			log.error( "Error " + e4.getStatusCode().value() + " " + e4.getStatusText() + " - " +  makeErrorMessage(e4.getResponseBodyAsString())  );
-			throw new RuntimeException(  makeErrorMessage(e4.getResponseBodyAsString())  );
+			log.error( "Error " + e4.getStatusCode().value() + " " + e4.getStatusText() + " - " + makeErrorMessage( e4.getResponseBodyAsString() ) );
+			throw new RuntimeException( makeErrorMessage( e4.getResponseBodyAsString() ) );
 		}
 		catch ( IllegalArgumentException e ) {
 			log.info( "It was not possible to send files to Alfresco." );

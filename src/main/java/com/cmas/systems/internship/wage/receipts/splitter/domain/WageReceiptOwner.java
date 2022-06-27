@@ -3,7 +3,7 @@ package com.cmas.systems.internship.wage.receipts.splitter.domain;
 import lombok.Data;
 
 @Data
-public class Person {
+public class WageReceiptOwner {
 
 	private String name;
 
@@ -13,8 +13,7 @@ public class Person {
 
 	private String processDate;
 
-
-	public Person( Integer nif, String password ) {
+	public WageReceiptOwner( Integer nif, String password ) {
 		this.nif = nif;
 		this.password = password;
 	}

@@ -1,6 +1,6 @@
 package com.cmas.systems.internship.wage.receipts.splitter.application;
 
-import com.cmas.systems.internship.wage.receipts.splitter.domain.Person;
+import com.cmas.systems.internship.wage.receipts.splitter.domain.WageReceiptOwner;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileSplitter;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileUploader;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -55,17 +55,17 @@ public class WageReceiptService {
 		}
 
 		//Create a list of each person (each person is created according to the NIF in the passwords file)
-		Map<Integer, Person> personMap = passwordsMap
+		Map<Integer, WageReceiptOwner> personMap = passwordsMap
 			.entrySet()
 			.stream()
 			.map( entry -> {
 				if ( entry.getValue() == "" || entry.getKey() == "" || entry.getKey().length() != 9 ) {
 					throw new RuntimeException( "Incorrect password(s)/nif(s) format" );
 				}
-				return new Person( Integer.parseInt( entry.getKey() ), entry.getValue() );
+				return new WageReceiptOwner( Integer.parseInt( entry.getKey() ), entry.getValue() );
 
 			} )
-			.collect( Collectors.toMap( Person::getNif, Function.identity() ) );
+			.collect( Collectors.toMap( WageReceiptOwner::getNif, Function.identity() ) );
 
 		try ( PDDocument wagesReceipts = PDDocument.load( wageReceiptPdf.getBytes() ) ) {
 
@@ -73,7 +73,6 @@ public class WageReceiptService {
 			Map<Integer, ByteArrayOutputStream> split = receiptFileSplitter.split( wagesReceipts, personMap.values() );
 
 			split.forEach( ( key, value ) -> {
-
 
 				//Encrypt the pdf file with the respective person's password
 				ByteArrayOutputStream arrayOutputStream = protectFile( value, key, passwordsMap.get( String.valueOf( key ) ) );
@@ -101,7 +100,7 @@ public class WageReceiptService {
 		try {
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-			PDDocument documentToEncrypt = PDDocument.load(document.toByteArray());
+			PDDocument documentToEncrypt = PDDocument.load( document.toByteArray() );
 			//Encrypt the pdf document
 			AccessPermission accessPermission = new AccessPermission();
 			StandardProtectionPolicy spp = new StandardProtectionPolicy( password, password, accessPermission );

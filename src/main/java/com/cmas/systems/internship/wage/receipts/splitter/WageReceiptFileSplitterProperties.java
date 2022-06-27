@@ -6,15 +6,22 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "wage-receipt-file-splitter")
+@ConfigurationProperties( prefix = "wage-receipt-file-splitter" )
 public class WageReceiptFileSplitterProperties {
-    private AlfrescoProperties alfrescoProperties;
-    private String tempFolder;
-    private String wageReceiptsNodeid;
-    @Data
-    public static class AlfrescoProperties{
-        private String url;
-        private String username;
-        private String password;
-    }
+
+	private AlfrescoProperties alfrescoProperties;
+
+	private String tempFolder;
+
+	private String wageReceiptsNodeid;
+
+	@Data
+	public static class AlfrescoProperties {
+
+		private String url;
+
+		private String username;
+
+		private String password;
+	}
 }
