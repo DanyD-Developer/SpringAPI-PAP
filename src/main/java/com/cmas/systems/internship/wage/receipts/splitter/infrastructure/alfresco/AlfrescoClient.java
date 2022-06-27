@@ -106,7 +106,13 @@ public class AlfrescoClient {
 	}
 
 	public void closeTicket( String ticket ) {
-		restTemplate.delete( format( "%s/-me-?alf_ticket=%s", this.ticketUrl, ticket ) );
+		try {
+			restTemplate.delete( format( "%s/-me-?alf_ticket=%s", this.ticketUrl, ticket ) );
+		}catch (Exception e){
+			log.error("Failed to delete ticket.");
+			throw new  RuntimeException("Failed Connection to alfresco.");
+		}
+
 	}
 
 	private static String makeErrorMessage( String JSONmensage ) {

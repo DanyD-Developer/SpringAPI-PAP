@@ -21,10 +21,7 @@ public class WageReceiptEndpoints {
 	@PostMapping( "/upload" )
 	public ResponseEntity<String> getRequest( @RequestParam( "wageReceiptPdf" ) MultipartFile wageReceiptPdf, @RequestParam( "pwdFile" ) MultipartFile pwdFile ) {
 
-		wageReceiptService.processFile( wageReceiptPdf, pwdFile );
-
-		return ResponseEntity.ok().build();
-
+		return wageReceiptService.processFile( wageReceiptPdf, pwdFile );
 	}
 
 }

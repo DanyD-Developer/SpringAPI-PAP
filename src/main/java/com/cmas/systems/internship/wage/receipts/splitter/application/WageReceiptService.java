@@ -1,6 +1,10 @@
 package com.cmas.systems.internship.wage.receipts.splitter.application;
 
 import com.cmas.systems.internship.wage.receipts.splitter.domain.WageReceiptOwner;
+import com.cmas.systems.internship.wage.receipts.splitter.exceptions.PasswordsException;
+import com.cmas.systems.internship.wage.receipts.splitter.exceptions.ProtectorException;
+import com.cmas.systems.internship.wage.receipts.splitter.exceptions.SplitterException;
+import com.cmas.systems.internship.wage.receipts.splitter.exceptions.UploadException;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileSplitter;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileUploader;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -12,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,30 +47,50 @@ public class WageReceiptService {
 	private final ObjectMapper objectMapper;
 
 	@SneakyThrows
-	public void processFile( MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
-		Map<String, String> passwordsMap = getPasswordsMap( pwdFile );
+	public ResponseEntity<String> processFile(MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
+		ResponseEntity<String> responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
+		//ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
 
-		//Create a list of each person (each person is created according to the NIF in the passwords file)
-		Map<Integer, WageReceiptOwner> personMap = passwordsMap
-			.entrySet()
-			.stream()
-			.map( entry -> new WageReceiptOwner( Integer.parseInt( entry.getKey() ), entry.getValue() ) )
-			.collect( Collectors.toMap( WageReceiptOwner::getNif, Function.identity() ) );
+		AtomicBoolean hasErrors = new AtomicBoolean(false);
+		AtomicReference<String> message = new AtomicReference<>("{");
 
 		try ( PDDocument wagesReceipts = PDDocument.load( wageReceiptPdf.getBytes() ) ) {
+
+			Map<String, String> passwordsMap = getPasswordsMap( pwdFile );
+
+			//Create a Map of each owner (each owner is created according to the NIF in the passwords file)
+			//Key: NIF | Value: owner
+			Map<Integer, WageReceiptOwner> personMap = passwordsMap
+					.entrySet()
+					.stream()
+					.map( entry -> new WageReceiptOwner( Integer.parseInt( entry.getKey() ), entry.getValue() ) )
+					.collect( Collectors.toMap( WageReceiptOwner::getNif, Function.identity() ) );
 
 			//Splits the pdfs and Checks if it was done any split
 			Map<Integer, ByteArrayOutputStream> split = receiptFileSplitter.split( wagesReceipts, personMap.values() );
 
+			//Key:NIF | Value: document  (every owner here has a document)
 			split.forEach( ( key, value ) -> {
+				String ownerName = personMap.get( key ).getName();
+				try {
+					//Encrypt the pdf file with the respective person's password
+					ByteArrayOutputStream arrayOutputStream = protectFile( value, key, passwordsMap.get( String.valueOf( key ) ) );
+					//Upload the files to alfresco
+					fileUploader.fileUpload( arrayOutputStream, ownerName );
 
-				//Encrypt the pdf file with the respective person's password
-				ByteArrayOutputStream arrayOutputStream = protectFile( value, key, passwordsMap.get( String.valueOf( key ) ) );
-				//Upload the files to alfresco
-				fileUploader.fileUpload( arrayOutputStream, personMap.get( key ).getName() );
-
+				}catch (ProtectorException | UploadException e){
+					if(hasErrors.get()){
+						message.set(message.get() + ",");
+					}
+					hasErrors.set(true);
+					message.set(message.get()+"\""+ ownerName +"\""+":{\"status\":\"" + e.getMessage() + "\"}");
+					return;
+				}
+				message.set(message.get()+"\""+ ownerName +"\""+":{\"status\":\"Upload Successful!\"}");
 			} );
-
+		}catch (SplitterException | PasswordsException e){
+			hasErrors.set(true);
+			message.set("{\"error\":\""+e.getMessage()+"\"");
 		}
 		catch ( NumberFormatException e ) {
 			log.error( "Failed to read NIF(s)" );
@@ -76,6 +104,12 @@ public class WageReceiptService {
 			log.error( "Failed Loading file {}", wageReceiptPdf.getOriginalFilename(), e );
 			throw new RuntimeException( "Failed Loading file" );
 		}
+
+		if(hasErrors.get()){
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message.get()+"}");
+		}
+
+		return ResponseEntity.status(HttpStatus.OK).body(message.get()+"}");
 	}
 
 	private Map<String, String> getPasswordsMap( MultipartFile pwdFile ) throws IOException {
@@ -91,22 +125,22 @@ public class WageReceiptService {
 					entry.getKey().length() != 9 );
 
 			if ( anyMatch ) {
-				throw new RuntimeException( "Incorrect password(s)/nif(s) format" );
+				throw new PasswordsException( "Incorrect password(s)/nif(s) format" );
 			}
 
 		}
 		catch ( JsonParseException e ) {
-			log.error( "Error trying to read JSON file verify if you put the correct file " + e.getMessage() );
-			throw new RuntimeException( "Error trying to read JSON file" );
+			log.error( "Error trying to read JSON file." + e.getMessage() );
+			throw new PasswordsException( "Error trying to read JSON file verify if you put the correct file." );
 		}
 		catch ( MismatchedInputException e ) {
-			log.error( "Error {}", e.getMessage() + " Make sure you didn't forget to put a file(s) on the body or if he file is not empty" );
-			throw new RuntimeException( "Error trying to get/read the body file(s)" );
+			log.error( "Error {}", e.getMessage());
+			throw new PasswordsException( "Error trying to get/read the body file(s). Make sure you didn't forget to put a file(s) on the body or if the file is not empty" );
 		}
 		return passwordsMap;
 	}
 
-	public ByteArrayOutputStream protectFile( ByteArrayOutputStream document, Integer owner, String password ) {
+	public ByteArrayOutputStream protectFile( ByteArrayOutputStream document, Integer owner, String password ) throws ProtectorException {
 		try {
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -124,7 +158,7 @@ public class WageReceiptService {
 		}
 		catch ( IOException e ) {
 			log.error( "It was not possible to protect the pdfs of " + owner + ". Error: " + e.getMessage() );
-			throw new RuntimeException( "It was not possible to protect the pdfs" );
+			throw new ProtectorException( "It was not possible to protect the pdfs" );
 		}
 	}
 

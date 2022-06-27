@@ -1,6 +1,7 @@
 package com.cmas.systems.internship.wage.receipts.splitter.infrastructure;
 
 import com.cmas.systems.internship.wage.receipts.splitter.WageReceiptFileSplitterProperties;
+import com.cmas.systems.internship.wage.receipts.splitter.exceptions.UploadException;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.alfresco.AlfrescoClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +20,11 @@ public class WageReceiptFileUploader {
 
 	private final AlfrescoClient alfrescoClient;
 
-	public void fileUpload( ByteArrayOutputStream byteArrayOutputStream, String personName ) {
-
-		String ticket = alfrescoClient.requestTicket();
-
+	public void fileUpload( ByteArrayOutputStream byteArrayOutputStream, String personName ) throws UploadException {
+		String ticket = null;
 		try {
+			ticket = alfrescoClient.requestTicket();
+
 			String nodeId = assignFoldersID( ticket, personName );
 
 			boolean isSucceeded = alfrescoClient.uploadFile( ticket, nodeId, new FileNameAwareByteArrayResource( "rv_" + personName + "_teste.pdf", byteArrayOutputStream.toByteArray() ) );
@@ -36,10 +37,16 @@ public class WageReceiptFileUploader {
 		catch ( ResourceAccessException e ) {
 			log.info( "It was not possible to send files to Alfresco." );
 			log.error( "Error " + e );
-			throw new RuntimeException( "Connection Time out" );
+			throw new UploadException( "It was not possible to send files to Alfresco. Connection Time out" );
+		}
+		catch (RuntimeException e){
+			throw new UploadException(e.getMessage());
 		}
 		finally {
-			alfrescoClient.closeTicket( ticket );
+			if(ticket != null){
+				alfrescoClient.closeTicket( ticket );
+			}
+
 		}
 	}
 
@@ -58,12 +65,13 @@ public class WageReceiptFileUploader {
 			}
 			else {
 				log.error( "Person '" + personName + "' does not have a WR folder!" );
+				throw new RuntimeException("Person '" + personName + "' does not have a WR folder!");
 			}
 		}
 		else {
 			log.error( "Could not find folder of '" + personName + "' in alfresco! Make sure that the folder in alfresco have same name has the person ('" + personName + "')." );
+			throw new RuntimeException("Could not find folder of '" + personName + "' in alfresco! Make sure that the folder in alfresco have same name has the person ('" + personName + "').");
 		}
-		return null;
 	}
 
 }

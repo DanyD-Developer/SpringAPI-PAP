@@ -1,6 +1,7 @@
 package com.cmas.systems.internship.wage.receipts.splitter.infrastructure;
 
 import com.cmas.systems.internship.wage.receipts.splitter.domain.WageReceiptOwner;
+import com.cmas.systems.internship.wage.receipts.splitter.exceptions.SplitterException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 @Component
 public class WageReceiptFileSplitter {
 
-	public Map<Integer, ByteArrayOutputStream> split( PDDocument document, Collection<WageReceiptOwner> personList ) {
+	public Map<Integer, ByteArrayOutputStream> split( PDDocument document, Collection<WageReceiptOwner> personList ) throws SplitterException {
 
 		Map<Integer, PDDocument> documents = new HashMap<>();
 
@@ -72,8 +73,9 @@ public class WageReceiptFileSplitter {
 			}
 
 			if ( documents.values().stream().allMatch( Objects::isNull ) ) {
-				log.error( "It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file" );
-				throw new RuntimeException( "It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file" );
+				//log.error( "It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file" );
+				log.error("Any Split Performed.");
+				throw new SplitterException( "It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file" );
 			}
 
 			return documents.entrySet().stream().collect( Collectors.toMap(
@@ -97,7 +99,7 @@ public class WageReceiptFileSplitter {
 		}
 		catch ( IOException e ) {
 			log.error( "It was not possible to split the pdf. Error: " + e.getMessage() );
-			throw new RuntimeException( "It was not possible to split the pdf" );
+			throw new SplitterException( "It was not possible to split the pdf" );
 		}
 	}
 
