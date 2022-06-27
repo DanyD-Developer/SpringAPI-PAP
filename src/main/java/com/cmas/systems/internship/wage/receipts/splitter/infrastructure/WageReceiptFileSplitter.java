@@ -77,9 +77,11 @@ public class WageReceiptFileSplitter {
 			}
 
 			return documents.entrySet().stream().collect( Collectors.toMap(
-					integerPDDocumentEntry -> integerPDDocumentEntry.getKey(),
+					//Same as (integerPDDocumentEntry -> integerPDDocumentEntry.getKey())
+					Map.Entry::getKey,
 				new Function<Map.Entry<Integer, PDDocument>, ByteArrayOutputStream>() {
 
+					//Change the map with PDDocument to ByteArrayOutputStream and save the PDDocument inside memory
 					@SneakyThrows
 					@Override
 					public ByteArrayOutputStream apply( Map.Entry<Integer, PDDocument> integerPDDocumentEntry ) {
