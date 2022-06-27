@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class WageReceiptFileSplitterProperties {
     private AlfrescoProperties alfrescoProperties;
     private String tempFolder;
+    private String wageReceiptsNodeid;
     @Data
     public static class AlfrescoProperties{
         private String url;

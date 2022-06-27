@@ -62,7 +62,7 @@ public class WageReceiptService {
 		}
 		catch ( MismatchedInputException e ) {
 			log.error( "Error {}", e.getMessage() + " Make sure you didn't forget to put a file(s) on the body or if he file is not empty" );
-			throw new RuntimeException( "Error trying to get the body file(s)" );
+			throw new RuntimeException( "Error trying to get/read the body file(s)" );
 		}
 
 		String randomName = UUID.randomUUID().toString();
