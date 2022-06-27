@@ -70,9 +70,10 @@ public class WageReceiptService {
 		try ( PDDocument wagesReceipts = PDDocument.load( wageReceiptPdf.getBytes() ) ) {
 
 			//Splits the pdfs and Checks if it was done any split
-			Map<Integer, PDDocument> split = receiptFileSplitter.split( wagesReceipts, personMap.values() );
+			Map<Integer, ByteArrayOutputStream> split = receiptFileSplitter.split( wagesReceipts, personMap.values() );
 
 			split.forEach( ( key, value ) -> {
+
 
 				//Encrypt the pdf file with the respective person's password
 				ByteArrayOutputStream arrayOutputStream = protectFile( value, key, passwordsMap.get( String.valueOf( key ) ) );
@@ -96,18 +97,19 @@ public class WageReceiptService {
 		}
 	}
 
-	public ByteArrayOutputStream protectFile( PDDocument document, Integer owner, String password ) {
+	public ByteArrayOutputStream protectFile( ByteArrayOutputStream document, Integer owner, String password ) {
 		try {
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
+			PDDocument documentToEncrypt = PDDocument.load(document.toByteArray());
 			//Encrypt the pdf document
 			AccessPermission accessPermission = new AccessPermission();
 			StandardProtectionPolicy spp = new StandardProtectionPolicy( password, password, accessPermission );
 			spp.setEncryptionKeyLength( 256 );
 			spp.setPermissions( accessPermission );
-			document.protect( spp );
-			document.save( byteArrayOutputStream );
-			document.close();
+			documentToEncrypt.protect( spp );
+			documentToEncrypt.save( byteArrayOutputStream );
+			documentToEncrypt.close();
 
 			return byteArrayOutputStream;
 		}
