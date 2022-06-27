@@ -1,8 +1,6 @@
 package com.cmas.systems.internship.wage.receipts.splitter.application;
 
-import com.cmas.systems.internship.wage.receipts.splitter.WageReceiptFileSplitterProperties;
 import com.cmas.systems.internship.wage.receipts.splitter.domain.Person;
-import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileProtector;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileSplitter;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileUploader;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -12,21 +10,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.nonNull;
 
 /**
  * @author Nelson Neves ( nelson.neves@cmas-systems.com )
@@ -38,11 +31,7 @@ import static java.util.Objects.nonNull;
 @RequiredArgsConstructor
 public class WageReceiptService {
 
-	private final WageReceiptFileSplitterProperties appProperties;
-
 	private final WageReceiptFileUploader fileUploader;
-
-	private final WageReceiptFileProtector receiptFileProtector;
 
 	private final WageReceiptFileSplitter receiptFileSplitter;
 
@@ -65,81 +54,67 @@ public class WageReceiptService {
 			throw new RuntimeException( "Error trying to get/read the body file(s)" );
 		}
 
-		String randomName = UUID.randomUUID().toString();
+		//Create a list of each person (each person is created according to the NIF in the passwords file)
+		Map<Integer, Person> personMap = passwordsMap
+			.entrySet()
+			.stream()
+			.map( entry -> {
+				if ( entry.getValue() == "" || entry.getKey() == "" || entry.getKey().length() != 9 ) {
+					throw new RuntimeException( "Incorrect password(s)/nif(s) format" );
+				}
+				return new Person( Integer.parseInt( entry.getKey() ), entry.getValue() );
 
-		//Create the Temporary files
-		File file = createTemporaryFiles( wageReceiptPdf, randomName );
+			} )
+			.collect( Collectors.toMap( Person::getNif, Function.identity() ) );
 
-		try ( PDDocument wagesReceipts = PDDocument.load( file ) ) {
-			//Create a list of each person (each person is created according to the NIF in the passwords file)
-			List<Person> personsList = passwordsMap
-				.entrySet()
-				.stream()
-				.map( entry -> {
-					if(entry.getValue() == "" || entry.getKey() == "" || entry.getKey().length() != 9){
-						throw new RuntimeException("Incorrect password(s)/nif(s) format");
-					}
-					return new Person( Integer.parseInt( entry.getKey() ) , entry.getValue() );
-
-				})
-				.collect( Collectors.toList() );
+		try ( PDDocument wagesReceipts = PDDocument.load( wageReceiptPdf.getBytes() ) ) {
 
 			//Splits the pdfs and Checks if it was done any split
-			receiptFileSplitter.split( wagesReceipts, personsList );
+			Map<Integer, PDDocument> split = receiptFileSplitter.split( wagesReceipts, personMap.values() );
 
-			//Upload the files to alfresco
-			fileUploader.fileUpload( personsList, randomName );
+			split.forEach( ( key, value ) -> {
+
+				//Encrypt the pdf file with the respective person's password
+				ByteArrayOutputStream arrayOutputStream = protectFile( value, key, passwordsMap.get( String.valueOf( key ) ) );
+				//Upload the files to alfresco
+				fileUploader.fileUpload( arrayOutputStream, personMap.get( key ).getName() );
+
+			} );
 
 		}
-		catch (NumberFormatException e){
-			log.error("Failed to read NIF(s)");
-			throw new RuntimeException("Failed to read NIF(s)");
+		catch ( NumberFormatException e ) {
+			log.error( "Failed to read NIF(s)" );
+			throw new RuntimeException( "Failed to read NIF(s)" );
 		}
-		catch (IOException e){
-			log.error("File isn't a valid pdf file");
-			throw new RuntimeException("File isn't a valid pdf file");
+		catch ( IOException e ) {
+			log.error( "File isn't a valid pdf file" );
+			throw new RuntimeException( "File isn't a valid pdf file" );
 		}
 		catch ( Exception e ) {
 			log.error( "Failed Loading file {}", wageReceiptPdf.getOriginalFilename(), e );
 			throw new RuntimeException( "Failed Loading file" );
 		}
-		finally {
-			//Delete the Temporary Files
-			deleteTemporaryFiles( randomName );
-		}
 	}
 
-	private File createTemporaryFiles( MultipartFile multipartFilePDF, String randomName ) {
-		File randomFolder = new File(appProperties.getTempFolder() + "\\" + randomName);
-		randomFolder.mkdir();
+	public ByteArrayOutputStream protectFile( PDDocument document, Integer owner, String password ) {
+		try {
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-		File temporaryFilePDF = new File( randomFolder + "\\" + multipartFilePDF.getOriginalFilename() );
+			//Encrypt the pdf document
+			AccessPermission accessPermission = new AccessPermission();
+			StandardProtectionPolicy spp = new StandardProtectionPolicy( password, password, accessPermission );
+			spp.setEncryptionKeyLength( 256 );
+			spp.setPermissions( accessPermission );
+			document.protect( spp );
+			document.save( byteArrayOutputStream );
+			document.close();
 
-		try ( OutputStream os = Files.newOutputStream( temporaryFilePDF.toPath() ) ) {
-			//Write PDF document
-			os.write( multipartFilePDF.getBytes() );
-			multipartFilePDF.transferTo( temporaryFilePDF );
-			return temporaryFilePDF;
+			return byteArrayOutputStream;
 		}
 		catch ( IOException e ) {
-			log.error( "Could not write multipart file inside an empty file, make sure you insert the file in the body." );
-			throw new RuntimeException( "Could not write multipart file inside an empty file." );
+			log.error( "It was not possible to protect the pdfs of " + owner + ". Error: " + e.getMessage() );
+			throw new RuntimeException( "It was not possible to protect the pdfs" );
 		}
 	}
 
-	public void deleteTemporaryFiles(String randomName) {
-
-		File folder = new File( appProperties.getTempFolder() + "\\" + randomName );
-		for ( final File fileEntry : Objects.requireNonNull( folder.listFiles() ) ) {
-			try{
-				FileUtils.deleteDirectory(folder);
-			}
-			catch (IOException e){
-				log.error( "It Was not possible Delete the files." );
-				throw new RuntimeException( "It Was not possible Delete the files." );
-			}
-
-			log.info( "Delete " + fileEntry.getName() );
-		}
-	}
 }

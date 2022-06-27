@@ -1,8 +1,6 @@
 package com.cmas.systems.internship.wage.receipts.splitter.domain;
 
 import lombok.Data;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.springframework.core.io.FileSystemResource;
 
 @Data
 public class Person {
@@ -15,11 +13,6 @@ public class Person {
 
 	private String processDate;
 
-	private String nodeID;
-
-	private PDDocument document = null;
-
-	private String filePath;
 
 	public Person( Integer nif, String password ) {
 		this.nif = nif;
