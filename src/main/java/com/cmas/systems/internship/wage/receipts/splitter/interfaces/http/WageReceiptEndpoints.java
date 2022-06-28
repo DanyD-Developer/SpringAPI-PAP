@@ -1,6 +1,8 @@
 package com.cmas.systems.internship.wage.receipts.splitter.interfaces.http;
 
 import com.cmas.systems.internship.wage.receipts.splitter.application.WageReceiptService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,8 @@ public class WageReceiptEndpoints {
 	private final WageReceiptService wageReceiptService;
 
 	@PostMapping( "/upload" )
-	public ResponseEntity<OwnersListResponse> getRequest(@RequestParam( "wageReceiptPdf" ) MultipartFile wageReceiptPdf, @RequestParam( "pwdFile" ) MultipartFile pwdFile ) {
-		return ResponseEntity.ok(wageReceiptService.processFile( wageReceiptPdf, pwdFile ));
+	public ResponseEntity<String> getRequest(@RequestParam( "wageReceiptPdf" ) MultipartFile wageReceiptPdf, @RequestParam( "pwdFile" ) MultipartFile pwdFile ) throws JsonProcessingException {
+		return ResponseEntity.ok(new ObjectMapper().writeValueAsString(wageReceiptService.processFile( wageReceiptPdf, pwdFile )));
 	}
 
 }
