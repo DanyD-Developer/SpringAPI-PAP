@@ -11,6 +11,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
@@ -49,10 +50,10 @@ public class CorsConfig {
 	private CorsConfiguration corsConfiguration() {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowedOrigins( properties.getAllowedOrigins() );
-		config.setAllowedMethods( List.of( GET.name(), PUT.name(), POST.name(), DELETE.name(), PATCH.name() ) );
+		config.setAllowedMethods( Arrays.asList(GET.name(), PUT.name(), POST.name(), DELETE.name(), PATCH.name()) );
 		config.setAllowCredentials( TRUE );
-		config.setAllowedHeaders( List.of( AUTHORIZATION, CONTENT_TYPE, X_REQUESTED_WITH ) );
-		config.setExposedHeaders( List.of( HttpHeaders.CONTENT_DISPOSITION ) );
+		config.setAllowedHeaders( Arrays.asList( AUTHORIZATION, CONTENT_TYPE, X_REQUESTED_WITH ) );
+		config.setExposedHeaders( Arrays.asList( HttpHeaders.CONTENT_DISPOSITION ) );
 		return config;
 	}
 }

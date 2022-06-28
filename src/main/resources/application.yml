@@ -2,6 +2,8 @@ server:
   port: 8964
 
 wage-receipt-file-splitter:
+  allowed-origins:
+    - http://localhost:4200
   alfresco-properties:
     url: https://alfresco-nowo.cmas-systems.com
     username: config
