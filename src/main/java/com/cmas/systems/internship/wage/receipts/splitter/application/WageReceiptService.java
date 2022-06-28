@@ -7,6 +7,7 @@ import com.cmas.systems.internship.wage.receipts.splitter.exceptions.SplitterExc
 import com.cmas.systems.internship.wage.receipts.splitter.exceptions.UploadException;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileSplitter;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileUploader;
+import com.cmas.systems.internship.wage.receipts.splitter.interfaces.http.OwnerResponse;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
@@ -24,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -47,12 +50,9 @@ public class WageReceiptService {
 	private final ObjectMapper objectMapper;
 
 	@SneakyThrows
-	public ResponseEntity<String> processFile(MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
-		ResponseEntity<String> responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
-		//ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
+	public List<OwnerResponse> processFile(MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
 
-		AtomicBoolean hasErrors = new AtomicBoolean(false);
-		AtomicReference<String> message = new AtomicReference<>("{");
+		final List<OwnerResponse> list = new ArrayList<>();
 
 		try ( PDDocument wagesReceipts = PDDocument.load( wageReceiptPdf.getBytes() ) ) {
 
@@ -77,20 +77,13 @@ public class WageReceiptService {
 					ByteArrayOutputStream arrayOutputStream = protectFile( value, nif, passwordsMap.get( String.valueOf( nif ) ) );
 					//Upload the files to alfresco
 					fileUploader.fileUpload( arrayOutputStream, owner.getName(), owner.getProcessDate() );
-
+					list.add(new OwnerResponse(owner.getName(),"Upload Successful."));
 				}catch (ProtectorException | UploadException e){
-					if(hasErrors.get()){
-						message.set(message.get() + ",");
-					}
-					hasErrors.set(true);
-					message.set(message.get()+"\""+ owner.getName() +"\""+":{\"status\":\"" + e.getMessage() + "\"}");
-					return;
+					list.add(new OwnerResponse(owner.getName(),e.getMessage()));
 				}
-				message.set(message.get()+"\""+ owner.getName() +"\""+":{\"status\":\"Upload Successful!\"}");
 			} );
 		}catch (SplitterException | PasswordsException e){
-			hasErrors.set(true);
-			message.set("{\"error\":\""+e.getMessage()+"\"");
+			throw new RuntimeException( "Failed to read NIF(s)/Split." );
 		}
 		catch ( NumberFormatException e ) {
 			log.error( "Failed to read NIF(s)" );
@@ -105,11 +98,7 @@ public class WageReceiptService {
 			throw new RuntimeException( "Failed Loading file" );
 		}
 
-		if(hasErrors.get()){
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message.get()+"}");
-		}
-
-		return ResponseEntity.status(HttpStatus.OK).body(message.get()+"}");
+		return list;
 	}
 
 	private Map<String, String> getPasswordsMap( MultipartFile pwdFile ) throws IOException {

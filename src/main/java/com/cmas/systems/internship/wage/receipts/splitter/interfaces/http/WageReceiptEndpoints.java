@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @Slf4j
@@ -19,9 +21,8 @@ public class WageReceiptEndpoints {
 	private final WageReceiptService wageReceiptService;
 
 	@PostMapping( "/upload" )
-	public ResponseEntity<String> getRequest( @RequestParam( "wageReceiptPdf" ) MultipartFile wageReceiptPdf, @RequestParam( "pwdFile" ) MultipartFile pwdFile ) {
-
-		return wageReceiptService.processFile( wageReceiptPdf, pwdFile );
+	public ResponseEntity<List<OwnerResponse>> getRequest(@RequestParam( "wageReceiptPdf" ) MultipartFile wageReceiptPdf, @RequestParam( "pwdFile" ) MultipartFile pwdFile ) {
+		return ResponseEntity.ok(wageReceiptService.processFile( wageReceiptPdf, pwdFile ));
 	}
 
 }
