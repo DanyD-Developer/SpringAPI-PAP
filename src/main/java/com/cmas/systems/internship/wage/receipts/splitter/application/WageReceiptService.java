@@ -8,6 +8,7 @@ import com.cmas.systems.internship.wage.receipts.splitter.exceptions.UploadExcep
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileSplitter;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileUploader;
 import com.cmas.systems.internship.wage.receipts.splitter.interfaces.http.OwnerResponse;
+import com.cmas.systems.internship.wage.receipts.splitter.interfaces.http.OwnersListResponse;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
@@ -50,7 +51,7 @@ public class WageReceiptService {
 	private final ObjectMapper objectMapper;
 
 	@SneakyThrows
-	public List<OwnerResponse> processFile(MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
+	public OwnersListResponse processFile(MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
 
 		final List<OwnerResponse> list = new ArrayList<>();
 
@@ -98,7 +99,7 @@ public class WageReceiptService {
 			throw new RuntimeException( "Failed Loading file" );
 		}
 
-		return list;
+		return new OwnersListResponse(list);
 	}
 
 	private Map<String, String> getPasswordsMap( MultipartFile pwdFile ) throws IOException {
