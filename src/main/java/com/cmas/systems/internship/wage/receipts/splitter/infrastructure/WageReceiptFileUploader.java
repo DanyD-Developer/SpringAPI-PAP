@@ -1,7 +1,6 @@
 package com.cmas.systems.internship.wage.receipts.splitter.infrastructure;
 
 import com.cmas.systems.internship.wage.receipts.splitter.WageReceiptFileSplitterProperties;
-import com.cmas.systems.internship.wage.receipts.splitter.domain.WageReceiptOwner;
 import com.cmas.systems.internship.wage.receipts.splitter.exceptions.UploadException;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.alfresco.AlfrescoClient;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class WageReceiptFileUploader {
 
 	private final AlfrescoClient alfrescoClient;
 
-	public void fileUpload(ByteArrayOutputStream byteArrayOutputStream, String personName, String data) throws UploadException{
+	public void fileUpload( ByteArrayOutputStream byteArrayOutputStream, String personName, String data ) throws UploadException {
 
 		String ticket = null;
 		try {
@@ -29,7 +28,7 @@ public class WageReceiptFileUploader {
 
 			String nodeId = assignFoldersID( ticket, personName );
 
-			boolean isSucceeded = alfrescoClient.uploadFile( ticket, nodeId, new FileNameAwareByteArrayResource( "RV_"+ data +" - "+ personName + ".pdf", byteArrayOutputStream.toByteArray() ) );
+			boolean isSucceeded = alfrescoClient.uploadFile( ticket, nodeId, new FileNameAwareByteArrayResource( "RV_" + data + " - " + personName + ".pdf", byteArrayOutputStream.toByteArray() ) );
 
 			if ( isSucceeded ) {
 				log.info( personName + " - File Upload to alfresco successfully" );
@@ -41,11 +40,11 @@ public class WageReceiptFileUploader {
 			log.error( "Error " + e );
 			throw new UploadException( "It was not possible to send files to Alfresco. Connection Time out" );
 		}
-		catch (RuntimeException e){
-			throw new UploadException(e.getMessage());
+		catch ( RuntimeException e ) {
+			throw new UploadException( e.getMessage() );
 		}
 		finally {
-			if(ticket != null){
+			if ( ticket != null ) {
 				alfrescoClient.closeTicket( ticket );
 			}
 
@@ -67,12 +66,12 @@ public class WageReceiptFileUploader {
 			}
 			else {
 				log.error( "Person '" + personName + "' does not have a WR folder!" );
-				throw new RuntimeException("Person '" + personName + "' does not have a WR folder!");
+				throw new RuntimeException( "Person '" + personName + "' does not have a WR folder!" );
 			}
 		}
 		else {
 			log.error( "Could not find folder of '" + personName + "' in alfresco! Make sure that the folder in alfresco have same name has the person ('" + personName + "')." );
-			throw new RuntimeException("Could not find folder of '" + personName + "' in alfresco! Make sure that the folder in alfresco have same name has the person ('" + personName + "').");
+			throw new RuntimeException( "Could not find folder of '" + personName + "' in alfresco! Make sure that the folder in alfresco have same name has the person ('" + personName + "')." );
 		}
 	}
 

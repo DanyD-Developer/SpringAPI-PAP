@@ -9,8 +9,6 @@ public class WageReceiptOwner {
 
 	private final Integer nif;
 
-	private boolean problem;
-
 	private final String password;
 
 	private String processDate;

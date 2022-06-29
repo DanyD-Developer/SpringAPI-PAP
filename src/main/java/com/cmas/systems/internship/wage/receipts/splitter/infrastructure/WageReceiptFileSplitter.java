@@ -37,7 +37,7 @@ public class WageReceiptFileSplitter {
 			PDFTextStripper pdfStripper = new PDFTextStripper();
 			int lastNif = 0;
 			PDDocument lastDoc = null;
-			PDDocument doc;
+			PDDocument doc = null;
 			//Make a cycle to Read the document page by page
 			for ( int i = 1; i <= document.getNumberOfPages(); i++ ) {
 				pdfStripper.setStartPage( i );
@@ -46,21 +46,21 @@ public class WageReceiptFileSplitter {
 
 				//Make a cycle per person to give the correspondents page/pages
 				for ( WageReceiptOwner person : personList ) {
+
 					if ( text.contains( person.getNif().toString() ) ) {
 						PDPageTree listTree = document.getPages();
 						PDPage page = listTree.get( i - 1 );
 						doc = new PDDocument();
-
 						//If equals to the last niff means he has more than 1 page
 						if ( person.getNif() == lastNif ) {
 							//Add a page and set the document of the person
 							if ( lastDoc != null ) {
 								lastDoc.addPage( page );
 								documents.put( person.getNif(), lastDoc );
-								doc.close();
 							}
 						}
 						else {
+
 							//If is not equal to the last niff he set the document of the person
 							person.getPersonNameAndDate( text );
 							doc.addPage( page );
@@ -74,27 +74,31 @@ public class WageReceiptFileSplitter {
 
 			if ( documents.values().stream().allMatch( Objects::isNull ) ) {
 				//log.error( "It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file" );
-				log.error("Any Split Performed.");
+				log.error( "Any Split Performed." );
 				throw new SplitterException( "It was not performed any split, maybe you selected the wrong pdf file or you are Missing NIFs in the Passwords file" );
 			}
 
 			return documents.entrySet().stream().collect( Collectors.toMap(
-					//Same as (integerPDDocumentEntry -> integerPDDocumentEntry.getKey())
-					Map.Entry::getKey,
+				//Same as (integerPDDocumentEntry -> integerPDDocumentEntry.getKey())
+				Map.Entry::getKey,
 				new Function<Map.Entry<Integer, PDDocument>, ByteArrayOutputStream>() {
 
 					//Change the map with PDDocument to ByteArrayOutputStream and save the PDDocument inside memory
 					@SneakyThrows
 					@Override
 					public ByteArrayOutputStream apply( Map.Entry<Integer, PDDocument> integerPDDocumentEntry ) {
+						PDDocument pdDocument = integerPDDocumentEntry.getValue();
 						ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-						integerPDDocumentEntry.getValue().save( byteArrayOutputStream );
+						pdDocument.save( byteArrayOutputStream );
+						pdDocument.close();
+						byteArrayOutputStream.close();
+
 						return byteArrayOutputStream;
 					}
 				} ) );
 		}
 		catch ( IOException e ) {
-			log.error( "It was not possible to split the pdf. Error: " + e.getMessage() );
+			log.error( "It was not possible to split the pdf. Error: " + e.getMessage(), e );
 			throw new SplitterException( "It was not possible to split the pdf" );
 		}
 	}

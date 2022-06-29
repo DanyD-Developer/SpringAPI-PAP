@@ -7,8 +7,7 @@ import com.cmas.systems.internship.wage.receipts.splitter.exceptions.SplitterExc
 import com.cmas.systems.internship.wage.receipts.splitter.exceptions.UploadException;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileSplitter;
 import com.cmas.systems.internship.wage.receipts.splitter.infrastructure.WageReceiptFileUploader;
-import com.cmas.systems.internship.wage.receipts.splitter.interfaces.http.OwnerResponse;
-import com.cmas.systems.internship.wage.receipts.splitter.interfaces.http.OwnersListResponse;
+import com.cmas.systems.internship.wage.receipts.splitter.interfaces.http.WageReceiptOwnerResult;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
@@ -18,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,9 +46,9 @@ public class WageReceiptService {
 	private final ObjectMapper objectMapper;
 
 	@SneakyThrows
-	public OwnersListResponse processFile(MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
+	public List<WageReceiptOwnerResult> processFile( MultipartFile wageReceiptPdf, MultipartFile pwdFile ) {
 
-		final List<OwnerResponse> list = new ArrayList<>();
+		final List<WageReceiptOwnerResult> wageReceiptOwnerResults = new ArrayList<>();
 
 		try ( PDDocument wagesReceipts = PDDocument.load( wageReceiptPdf.getBytes() ) ) {
 
@@ -62,28 +57,29 @@ public class WageReceiptService {
 			//Create a Map of each owner (each owner is created according to the NIF in the passwords file)
 			//Key: NIF | Value: owner
 			Map<Integer, WageReceiptOwner> personMap = passwordsMap
-					.entrySet()
-					.stream()
-					.map( entry -> new WageReceiptOwner( Integer.parseInt( entry.getKey() ), entry.getValue() ) )
-					.collect( Collectors.toMap( WageReceiptOwner::getNif, Function.identity() ) );
+				.entrySet()
+				.stream()
+				.map( entry -> new WageReceiptOwner( Integer.parseInt( entry.getKey() ), entry.getValue() ) )
+				.collect( Collectors.toMap( WageReceiptOwner::getNif, Function.identity() ) );
 
 			//Splits the pdfs and Checks if it was done any split
 			Map<Integer, ByteArrayOutputStream> split = receiptFileSplitter.split( wagesReceipts, personMap.values() );
 
-			
 			split.forEach( ( nif, value ) -> {
-				WageReceiptOwner owner = personMap.get(nif);
+				WageReceiptOwner owner = personMap.get( nif );
 				try {
 					//Encrypt the pdf file with the respective person's password
 					ByteArrayOutputStream arrayOutputStream = protectFile( value, nif, passwordsMap.get( String.valueOf( nif ) ) );
 					//Upload the files to alfresco
 					fileUploader.fileUpload( arrayOutputStream, owner.getName(), owner.getProcessDate() );
-					list.add(new OwnerResponse(owner.getName(),"Upload Successful."));
-				}catch (ProtectorException | UploadException e){
-					list.add(new OwnerResponse(owner.getName(),e.getMessage()));
+					wageReceiptOwnerResults.add( new WageReceiptOwnerResult( owner.getName(), "Upload Successful." ) );
+				}
+				catch ( ProtectorException | UploadException e ) {
+					wageReceiptOwnerResults.add( new WageReceiptOwnerResult( owner.getName(), e.getMessage() ) );
 				}
 			} );
-		}catch (SplitterException | PasswordsException e){
+		}
+		catch ( SplitterException | PasswordsException e ) {
 			throw new RuntimeException( "Failed to read NIF(s)/Split." );
 		}
 		catch ( NumberFormatException e ) {
@@ -99,7 +95,7 @@ public class WageReceiptService {
 			throw new RuntimeException( "Failed Loading file" );
 		}
 
-		return new OwnersListResponse(list);
+		return wageReceiptOwnerResults;
 	}
 
 	private Map<String, String> getPasswordsMap( MultipartFile pwdFile ) throws IOException {
@@ -124,7 +120,7 @@ public class WageReceiptService {
 			throw new PasswordsException( "Error trying to read JSON file verify if you put the correct file." );
 		}
 		catch ( MismatchedInputException e ) {
-			log.error( "Error {}", e.getMessage());
+			log.error( "Error {}", e.getMessage() );
 			throw new PasswordsException( "Error trying to get/read the body file(s). Make sure you didn't forget to put a file(s) on the body or if the file is not empty" );
 		}
 		return passwordsMap;
@@ -143,6 +139,7 @@ public class WageReceiptService {
 			documentToEncrypt.protect( spp );
 			documentToEncrypt.save( byteArrayOutputStream );
 			documentToEncrypt.close();
+			byteArrayOutputStream.close();
 
 			return byteArrayOutputStream;
 		}

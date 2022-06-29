@@ -11,7 +11,6 @@ import java.util.List;
 @ConfigurationProperties( prefix = "wage-receipt-file-splitter" )
 public class WageReceiptFileSplitterProperties {
 
-
 	private List<String> allowedOrigins;
 
 	private AlfrescoProperties alfrescoProperties;

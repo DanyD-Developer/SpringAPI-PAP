@@ -108,9 +108,10 @@ public class AlfrescoClient {
 	public void closeTicket( String ticket ) {
 		try {
 			restTemplate.delete( format( "%s/-me-?alf_ticket=%s", this.ticketUrl, ticket ) );
-		}catch (Exception e){
-			log.error("Failed to delete ticket.");
-			throw new  RuntimeException("Failed Connection to alfresco.");
+		}
+		catch ( Exception e ) {
+			log.error( "Failed to delete ticket." );
+			throw new RuntimeException( "Failed Connection to alfresco." );
 		}
 
 	}

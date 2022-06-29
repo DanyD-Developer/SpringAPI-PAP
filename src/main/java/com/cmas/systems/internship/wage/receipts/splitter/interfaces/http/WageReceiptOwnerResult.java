@@ -4,11 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author Nelson Neves ( nelson.neves@cmas-systems.com )
+ * @since <next-release>
+ */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OwnerResponse {
-    private String name;
-    private String message;
+public class WageReceiptOwnerResult {
+
+	private String name;
+
+	private String message;
 
 }
