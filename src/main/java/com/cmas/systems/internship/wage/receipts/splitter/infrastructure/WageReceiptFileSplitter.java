@@ -57,6 +57,7 @@ public class WageReceiptFileSplitter {
 							if ( lastDoc != null ) {
 								lastDoc.addPage( page );
 								documents.put( person.getNif(), lastDoc );
+								doc.close();
 							}
 						}
 						else {
