@@ -1,0 +1,12 @@
+<div class="form-group">
+  <div class="custom-file">
+    <input #fileInput id="file" type="file" class="custom-file-input"
+           (change)="selectFile($event)" accept="{{extension}}"
+           (input)="input()"
+           (click)="click()">
+    <label class="custom-file-label" for="file">{{!file ? 'Choose file' : file.name}}</label>
+  </div>
+  <ng-container *ngTemplateOutlet="template"></ng-container>
+</div>
+
+<ngb-progressbar type="success" *ngIf="progress!==0" [value]="progress" [striped]="true"></ngb-progressbar>

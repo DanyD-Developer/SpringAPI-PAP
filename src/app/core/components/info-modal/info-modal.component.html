@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h4 class="modal-title">Info <i class="icon-info22"></i></h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<style>
+ table {
+    width: 100%;
+    border: 1px solid #000;
+  }
+
+  th, td {
+    width: 25%;
+    text-align: center;
+    vertical-align: top;
+    border: 1px solid #000;
+    border-collapse: collapse;
+    padding: 0.3em;
+    caption-side: bottom;
+  }
+  
+  th {
+    background: #eee;
+  }
+
+</style>
+
+<div class="modal-body">
+
+  <div class="card card-body">
+    <table id="table">
+      <tr>  <th>Owner</th>  <th>Status</th> </tr>
+     <tr *ngFor="let owner of data.list;"> 
+      <td>{{owner.name}}</td> 
+      <td style="color: green;">{{owner.message}}</td> 
+    </tr>
+    </table>
+  </div>
+
+</div>
+
+<div class="modal-footer">
+  <button type="submit" class="btn btn-lg btn-info" (click)="onSubmit()">Ok</button>
+</div>

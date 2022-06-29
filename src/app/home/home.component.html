@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="header-title mt-0">Wage Receipts Splitter</h2>
+        <hr class="mb-2 mt-0"/>
+
+        <form *ngIf="!!form" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <div class="form-group">
+            <label>PDF File Upload</label>
+            <app-file-upload formControlName="file" [extension]="'application/pdf'" [progress]="progress" [template]="fileUploadErrorField"></app-file-upload>
+
+            <label>Fiscal Number & Passwords Upload</label>
+            <app-file-upload formControlName="passwordsFile" [extension]="'application/json'" [progress]="progress" [template]="fileUploadErrorField"></app-file-upload>
+
+          </div>
+
+          <ng-template #fileUploadErrorField>
+            <error-field field="file"></error-field>
+          </ng-template>
+
+          <button type="submit" class="btn btn-success btn-lg float-right font-16">Submit</button>
+
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
