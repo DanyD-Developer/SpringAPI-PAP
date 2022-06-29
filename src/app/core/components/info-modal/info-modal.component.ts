@@ -1,7 +1,6 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
-import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import { OwnerResponse, OwnersListResponse } from 'src/app/home/home.component';
+import {OwnerResponse} from 'src/app/home/home.component';
 
 
 @Component({
@@ -10,7 +9,7 @@ import { OwnerResponse, OwnersListResponse } from 'src/app/home/home.component';
 })
 export class InfoModalComponent implements OnInit {
 
-  @Input() data: { title: string, list: Array<OwnerResponse> };
+  @Input() data: { title: string, list: OwnerResponse[] };
 
   constructor(public activeModal: NgbActiveModal) {
   }

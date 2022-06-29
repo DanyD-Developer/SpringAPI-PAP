@@ -73,16 +73,16 @@ export class HomeComponent implements OnInit {
     this.httpClient.post(url, signData, {
       reportProgress: true,
       observe: 'events',
-      responseType: 'text',
-      headers: new HttpHeaders().set('accept', 'application/pdf'),
+      responseType: 'json',
+      headers: new HttpHeaders().set('accept', 'application/json'),
     }).pipe(
       uploadProgress(progress => (this.progress = progress)),
       toResponseBody()
-    ).subscribe((response: HttpResponse<string>) => {
+    ).subscribe((response: HttpResponse<OwnerResponse[]>) => {
 
-      let ownersList: OwnersListResponse = JSON.parse(response.body);
+      let ownersList = response.body;
 
-      this.modalsService.openModal(InfoModalComponent, {title: "ABC", list: ownersList.owners});
+      this.modalsService.openModal(InfoModalComponent, {title: "Wage Receipts Split Result", list: ownersList});
       this.toastr.success(new Toastr(`Document(s) were uploaded successfully.`));
 
       this.form = null;
@@ -142,10 +142,6 @@ export class HomeComponent implements OnInit {
     return;
   }
 
-}
-
-export interface OwnersListResponse {
-  owners: Array<OwnerResponse>;
 }
 
 export interface OwnerResponse {

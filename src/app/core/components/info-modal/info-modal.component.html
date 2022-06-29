@@ -1,12 +1,12 @@
 <div class="modal-header">
-  <h4 class="modal-title">Info <i class="icon-info22"></i></h4>
+  <h4 class="modal-title">{{data.title}}</h4>
   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 
 <style>
- table {
+  table {
     width: 100%;
     border: 1px solid #000;
   }
@@ -20,7 +20,7 @@
     padding: 0.3em;
     caption-side: bottom;
   }
-  
+
   th {
     background: #eee;
   }
@@ -31,11 +31,14 @@
 
   <div class="card card-body">
     <table id="table">
-      <tr>  <th>Owner</th>  <th>Status</th> </tr>
-     <tr *ngFor="let owner of data.list;"> 
-      <td>{{owner.name}}</td> 
-      <td style="color: green;">{{owner.message}}</td> 
-    </tr>
+      <tr>
+        <th>Owner</th>
+        <th>Status</th>
+      </tr>
+      <tr *ngFor="let owner of data.list">
+        <td>{{owner.name}}</td>
+        <td style="color: green;">{{owner.message}}</td>
+      </tr>
     </table>
   </div>
 
