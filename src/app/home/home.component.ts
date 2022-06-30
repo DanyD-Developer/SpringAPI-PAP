@@ -93,7 +93,7 @@ export class HomeComponent implements OnInit {
       });
     }, response => {
       this.progress = 0;
-      this.toastr.error(new Toastr('It wasn\'t possible to process the given files! Contact the support team.'));
+      this.toastr.error(new Toastr('It wasn\'t possible to process the given files! <br>Check if you put the correct files. Any other problem please contact the support team.</br>'));
     });
   }
 
