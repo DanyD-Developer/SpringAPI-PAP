@@ -24,7 +24,8 @@ public class WageReceiptOwner {
 		for ( int i = 0; i < lines.length; i++ ) {
 			if ( lines[i].contains( "Categoria:" ) ) {
 				//Gets the date like this(24.05.2016) and turns into ->(Mai_2016)
-				String[] date = lines[i - 8].replace( ".", "-" ).split( "-" );
+				String[] date = lines[i - 4].split(":");
+				date = date[1].replace( ".", "-" ).split( "-" );
 				switch ( date[1] ) {
 					case "01":
 						date[1] = "Jan";
@@ -85,9 +86,12 @@ public class WageReceiptOwner {
                 */
 			}
 			else if ( lines[i].contains( "IBAN:" ) ) {
-				String name = lines[i - 3];
-				String firstName = name.split( " " )[0];
-				String lastName = name.split( " " )[name.split( " " ).length - 1];
+				String[] name = lines[i - 3].split(":");
+				name[1] = name[1].replace("Nº"," ");
+				name[1] = name[1].replace("Colaborador"," ");
+
+				String firstName = name[1].split( " " )[1];
+				String lastName = name[1].split( " " )[name[1].split( " " ).length - 1];
 
 				this.name = firstName + " " + lastName;
 			}

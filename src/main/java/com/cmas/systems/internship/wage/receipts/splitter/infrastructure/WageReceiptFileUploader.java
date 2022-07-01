@@ -28,6 +28,8 @@ public class WageReceiptFileUploader {
 
 			String nodeId = assignFoldersID( ticket, personName );
 
+			//TODO Solve the filename problem that is "RV_Abr_2015++-+Aimee+Brown.pdf"
+			//Solution remove the plus and minus
 			boolean isSucceeded = alfrescoClient.uploadFile( ticket, nodeId, new FileNameAwareByteArrayResource( "RV_" + data + " - " + personName + ".pdf", byteArrayOutputStream.toByteArray() ) );
 
 			if ( isSucceeded ) {

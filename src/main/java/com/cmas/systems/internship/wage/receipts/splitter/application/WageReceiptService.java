@@ -71,6 +71,7 @@ public class WageReceiptService {
 					//Encrypt the pdf file with the respective person's password
 					ByteArrayOutputStream arrayOutputStream = protectFile( value, nif, passwordsMap.get( String.valueOf( nif ) ) );
 					//Upload the files to alfresco
+					System.out.println(owner.getName());
 					fileUploader.fileUpload( arrayOutputStream, owner.getName(), owner.getProcessDate() );
 					wageReceiptOwnerResults.add( new WageReceiptOwnerResult( owner.getName(), "Upload Successful." ) );
 				}

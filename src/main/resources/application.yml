@@ -5,10 +5,10 @@ wage-receipt-file-splitter:
   allowed-origins:
     - http://localhost:4200
   alfresco-properties:
-    url: http://alfresco.cmas-systems.local
-    username: test_user
-    password: Password123!
-  wage-receipts-nodeid: "52f3d454-5ef6-4818-b861-61db814db56d"
+    url: http://localhost:8080
+    username: admin
+    password: admin
+  wage-receipts-nodeid: "35c3b08d-e0b6-4361-86e2-649b21d7e86e"
 
 logging:
   level:
